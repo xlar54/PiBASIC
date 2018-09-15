@@ -89,23 +89,23 @@ void basic_main()
 						exec_cmd_dir();
 					}
 				else
-					if(strncmp((char*)linebuf, "LOAD ", 5) == 0)
+					if(strncmp((char*)linebuf, "LOAD", 4) == 0)
 					{
 						int t = 0;
 						while(linebuf[t] != 0)
 						{
-							linebuf[0+t] = linebuf[5+t];
+							linebuf[0+t] = linebuf[4+t];
 							t++;
 						}
 						exec_cmd_load(linebuf);
 					}	
 				else
-					if(strncmp((char *)linebuf, "SAVE ", 5) == 0)
+					if(strncmp((char *)linebuf, "SAVE", 4) == 0)
 					{
 						int t = 0;
 						while(linebuf[t] != 0)
 						{
-							linebuf[0+t] = linebuf[5+t];
+							linebuf[0+t] = linebuf[4+t];
 							t++;
 						}
 						exec_cmd_save(linebuf);
@@ -473,7 +473,6 @@ void exec_cmd_dir()
 	else
 		term_printf("\n?Disk read error.");
 
-	term_printf("\n");
 }
 
 void exec_cmd_end(struct Context *ctx)
@@ -698,21 +697,59 @@ void exec_cmd_load(unsigned char* filename)
 	int bufferCtr = 0;
 	int linenum = 0;
 	int dataPtr = 0;
+	char fnbuffer[20] = {0};
+	
+	// skip spaces
+	int t=0;
+	while(filename[t] == ' ') t++;
+	
+	// expect quote
+	if(filename[t] != '\"')
+	{
+		term_printf("?Syntax error");
+		return;
+	}
+	
+	t++;
+	while(filename[t] != 0 && filename[t] != '\"')
+	{
+		fnbuffer[bufferCtr++] = filename[t++];
+	
+		if(bufferCtr == 15)
+			filename[t] = '\"';
+	}
+	
+	
+	// expect closing quote
+	if(filename[t] != '\"')
+	{
+		term_printf("?Syntax error");
+		return;
+	}
+	
+	fnbuffer[bufferCtr++] = '.';
+	fnbuffer[bufferCtr++] = 'B';
+	fnbuffer[bufferCtr++] = 'A';
+	fnbuffer[bufferCtr++] = 'S';
+	fnbuffer[bufferCtr] = 0;
+	
+	to_uppercase((unsigned char *)fnbuffer);
+	
+	bufferCtr = 0;
 	
 	// new cmd
 	while(!ll_isEmpty())
 		ll_deleteFirst();
+
+	//snprintf(fnbuffer, sizeof(fnbuffer), "%s.BAS", filename);
 	
-	char fnbuffer[15] = {0};
-	snprintf(fnbuffer, sizeof(fnbuffer), "%s.BAS", filename);
-	
-	term_printf("Searching for %s\n", filename);
+	term_printf("Searching for %s\n", fnbuffer);
 	
 	res = f_open(&fp, fnbuffer, FA_READ | FA_OPEN_EXISTING);
 	
 	if (res == FR_OK)
 	{
-		term_printf("Loading\n");
+		term_printf("Loading");
 		
 		while (true) 
 		{
@@ -859,15 +896,53 @@ void exec_cmd_save(unsigned char* filename)
 {
 	FIL fp;
 	FRESULT res;
-
+	int bufferCtr = 0;
 	char fnbuffer[15] = {0};
-	snprintf(fnbuffer, sizeof(fnbuffer), "%s.BAS", filename);
+
+	// skip spaces
+	int t=0;
+	while(filename[t] == ' ') t++;
+	
+	// expect quote
+	if(filename[t] != '\"')
+	{
+		term_printf("?Syntax error");
+		return;
+	}
+	
+	t++;
+	while(filename[t] != 0 && filename[t] != '\"')
+	{
+		fnbuffer[bufferCtr++] = filename[t++];
+	
+		if(bufferCtr == 15)
+			filename[t] = '\"';
+	}
+	
+	// expect closing quote
+	if(filename[t] != '\"')
+	{
+		term_printf("?Syntax error");
+		return;
+	}
+	
+	fnbuffer[bufferCtr++] = '.';
+	fnbuffer[bufferCtr++] = 'B';
+	fnbuffer[bufferCtr++] = 'A';
+	fnbuffer[bufferCtr++] = 'S';
+	fnbuffer[bufferCtr] = 0;
+	
+	to_uppercase((unsigned char *)fnbuffer);
+	
+	bufferCtr = 0;
+
+	//snprintf(fnbuffer, sizeof(fnbuffer), "%s.BAS", filename);
 	
 	res = f_open(&fp, fnbuffer, FA_WRITE | FA_CREATE_NEW);
 	
 	if (res == FR_OK)
 	{
-		term_printf("Saving %s\n", filename);
+		term_printf("Saving %s", fnbuffer);
 		
 		ll_sort();
 		struct node *ptr = ll_gethead();

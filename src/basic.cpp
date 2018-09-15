@@ -167,6 +167,16 @@ void exec_program(struct Context* ctx)
 		exec_line(ctx);
 
 		free(ctx->tokenized_line);
+		
+		char ch = term_getchar();
+		
+		if (ch == 27)
+		{
+			ctx->running = false;
+			ctx->error = ERR_UNEXP;
+			term_printf("\n?Break in %d\n", ctx->line);
+			return;
+		}
 
 		if (ctx->jmpline == -1)
 		{

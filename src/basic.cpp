@@ -112,10 +112,10 @@ void basic_main()
 					}
 					else
 					{
-						term_printf("?Syntax Error\n");
+						term_printf("?Syntax Error");
 					}
 			}
-			term_printf("Ready.\n");
+			term_printf("\nReady.\n");
 		}
 	}
 }
@@ -174,7 +174,7 @@ void exec_program(struct Context* ctx)
 		{
 			ctx->running = false;
 			ctx->error = ERR_UNEXP;
-			term_printf("\n?Break in %d\n", ctx->line);
+			term_printf("\n?Break in %d", ctx->line);
 			return;
 		}
 
@@ -190,7 +190,7 @@ void exec_program(struct Context* ctx)
 			{
 				ctx->running = false;
 				ctx->error = ERR_UNEXP;
-				term_printf("\n?Undef'd statement error in %d\n", ctx->line);
+				term_printf("\n?Undef'd statement error in %d", ctx->line);
 			}
 			else
 			{
@@ -274,6 +274,8 @@ int exec_expr(struct Context *ctx)
 
 		if (ctx->linePos == -1 || 
 			ctx->tokenized_line[ctx->linePos] == ':' ||
+			ctx->tokenized_line[ctx->linePos] == ';' ||
+			ctx->tokenized_line[ctx->linePos] == ',' ||
 			ctx->tokenized_line[ctx->linePos] > 127 )
 			break;
 
@@ -382,18 +384,11 @@ int exec_expr(struct Context *ctx)
 					}
 					else
 					{
-						if (ctx->tokenized_line[ctx->linePos] == ',')
-						{
-							break;
-						}
-						else
-						{
-							printf("\n?Syntax error in %d", ctx->line);
-							ctx->running = false;
-							ctx->error = ERR_UNEXP;
-							ctx->linePos++;
-							break;
-						}
+						printf("\n?Syntax error in %d", ctx->line);
+						ctx->running = false;
+						ctx->error = ERR_UNEXP;
+						ctx->linePos++;
+						break;
 					}
 
 		/* process pending operation with the operand value */
@@ -516,7 +511,7 @@ void exec_cmd_if(struct Context *ctx)
 
 	if (ctx->tokenized_line[ctx->linePos] != TOKEN_THEN)
 	{
-		term_printf("\n?Syntax error in %d\n", ctx->line);
+		term_printf("\n?Syntax error in %d", ctx->line);
 		ctx->running = false;
 		ctx->error = ERR_UNEXP;
 	}
@@ -552,7 +547,7 @@ void exec_cmd_input(struct Context *ctx)
 		/* ensure semicolon */
 		if (ctx->tokenized_line[ctx->linePos] != ';')
 		{
-			term_printf("\n?Syntax error in %d\n", ctx->line);
+			term_printf("\n?Syntax error in %d", ctx->line);
 			ctx->running = false;
 			ctx->error = ERR_UNEXP;
 			return;
@@ -597,7 +592,7 @@ void exec_cmd_input(struct Context *ctx)
 			{
 				ctx->running = false;
 				ctx->error = ERR_UNEXP;
-				term_printf("\n?Break in %d\n", ctx->line);
+				term_printf("\n?Break in %d", ctx->line);
 				return;
 			}
 
@@ -623,11 +618,11 @@ void exec_cmd_input(struct Context *ctx)
 	ctx->linePos = ignore_space(ctx->tokenized_line, ctx->linePos);
 	
 	// anything after expression must be end of line or colon
-	if (ctx->tokenized_line[ctx->linePos] != '\0' && ctx->tokenized_line[ctx->linePos] != ':')
+	if (ctx->linePos != -1 && ctx->tokenized_line[ctx->linePos] != ':')
 	{
 		ctx->running = false;
 		ctx->error = ERR_UNEXP;
-		printf("\n?Syntax error in %d\n", ctx->line);
+		printf("\n?Syntax error in %d", ctx->line);
 		return;
 	}
 }
@@ -652,7 +647,7 @@ void exec_cmd_let(struct Context *ctx)
 	{
 		ctx->running = false;
 		ctx->error = ERR_UNEXP;
-		term_printf("\n?Syntax error in %d\n", ctx->line);
+		term_printf("\n?Syntax error in %d", ctx->line);
 		return;
 	}
 
@@ -665,7 +660,7 @@ void exec_cmd_let(struct Context *ctx)
 	{
 		ctx->running = false;
 		ctx->error = ERR_UNEXP;
-		term_printf("\n?Syntax error in %d\n", ctx->line);
+		term_printf("\n?Syntax error in %d", ctx->line);
 		return;
 	}
 
@@ -763,7 +758,7 @@ void exec_cmd_load(unsigned char* filename)
 		f_close(&fp);
 	}
 	else
-		term_printf("?File load error #%d\n", res);
+		term_printf("?File load error #%d", res);
 }
 
 void exec_cmd_new(struct Context *ctx)
@@ -840,7 +835,7 @@ void exec_cmd_return(struct Context *ctx)
 	{
 		ctx->running = false;
 		ctx->error = ERR_UNEXP;
-		term_printf("\n?RETURN without GOSUB in %d\n", ctx->line);
+		term_printf("\n?RETURN without GOSUB in %d", ctx->line);
 		return;
 	}
 
@@ -881,7 +876,7 @@ void exec_cmd_save(unsigned char* filename)
 		while (ptr != NULL) 
 		{
 			char lnbuff[160] = { 0 };
-			snprintf(lnbuff, sizeof(lnbuff), "%d %s\n", ptr->linenum, ptr->data);
+			snprintf(lnbuff, sizeof(lnbuff), "%d %s", ptr->linenum, ptr->data);
 			f_puts(lnbuff, &fp);
 			ptr = ptr->next;
 		}
@@ -889,7 +884,7 @@ void exec_cmd_save(unsigned char* filename)
 		f_close(&fp);
 	}
 	else
-		term_printf("?File Save Error #%d\n", res);
+		term_printf("?File Save Error #%d", res);
 }
 
 void exec_cmd_then(struct Context *ctx)

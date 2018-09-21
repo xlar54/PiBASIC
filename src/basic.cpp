@@ -9,15 +9,13 @@ extern "C"
 #include <stdlib.h> 
 #include "vga.h"
 #include "linkedlist.h"
-
-
+#include "expr.h"
 }
 
 void basic_main()
 {
 	term_printf("\n                 The Raspberry Pi BASIC Development System");
 	term_printf("\n                       Operating System Version 1.0");
-	term_printf("\n                    Screen resolution: %d x %d - %dbpp");
 	term_printf("\n\nReady.\n");
 
 	struct Context ctx;
@@ -134,6 +132,9 @@ void exec_init(struct Context *ctx)
 	BINDCMD(&ctx->cmds[9], "DIM", exec_cmd_dim, TOKEN_DIM);
 	BINDCMD(&ctx->cmds[10], "REM", exec_cmd_rem, TOKEN_REM);
 	BINDCMD(&ctx->cmds[11], "THEN", exec_cmd_then, TOKEN_THEN);
+	BINDCMD(&ctx->cmds[12], "AND", exec_cmd_then, TOKEN_AND);
+	BINDCMD(&ctx->cmds[13], "OR", exec_cmd_then, TOKEN_OR);
+	BINDCMD(&ctx->cmds[14], "ABS", exec_cmd_then, TOKEN_ABS);
 }
 
 void exec_program(struct Context* ctx)
@@ -150,6 +151,8 @@ void exec_program(struct Context* ctx)
 	ctx->dsptr = 0;
 	ctx->csptr = 0;
 	ctx->allocated = 0;
+	ctx->linePos = 0;
+	ctx->error_line = 0;
 	ctx->error = ERR_NONE;
 
 	var_clear_all(ctx);
@@ -172,9 +175,39 @@ void exec_program(struct Context* ctx)
 		
 		if (ch == 27)
 		{
+			ctx->error = ERR_BREAK;
+			ctx->error_line = ctx->line;
+		}
+		
+		if (ctx->error != ERR_NONE)
+		{
+			switch (ctx->error)
+			{
+				case ERR_UNEXP:
+					term_printf("\n?Syntax error");
+					break;
+				case ERR_UNDEF:
+					term_printf("\n?Undef'd statement error");
+					break;
+				case ERR_BREAK:
+					term_printf("\n?Break");
+					break;
+				case ERR_DIV0:
+					term_printf("\n?Division by zero error");
+					break;
+				case ERR_RTRN_WO_GSB:
+					term_printf("\n?RETURN without GOSUB error");
+					break;
+				default:
+					term_printf("\n?Unspecified error");
+					break;
+			}
+
+			if(ctx->error_line != -1)
+				term_printf(" in line %d", ctx->error_line);
+
+			ctx->error = ERR_NONE;
 			ctx->running = false;
-			ctx->error = ERR_UNEXP;
-			term_printf("\n?Break in %d", ctx->line);
 			return;
 		}
 
@@ -185,18 +218,8 @@ void exec_program(struct Context* ctx)
 		}	
 		else
 		{
-			// error if jump line doesnt exist
-			if (ll_find(ctx->jmpline) == NULL)
-			{
-				ctx->running = false;
-				ctx->error = ERR_UNEXP;
-				term_printf("\n?Undef'd statement error in %d", ctx->line);
-			}
-			else
-			{
-				currentNode = ll_find(ctx->jmpline);
-				ctx->jmpline = -1;
-			}
+			currentNode = ll_find(ctx->jmpline);
+			ctx->jmpline = -1;
 		}
 	}
 
@@ -215,9 +238,7 @@ void exec_line(struct Context *ctx)
 		ctx->linePos = ignore_space(ctx->tokenized_line, ctx->linePos);
 
 		if (ctx->linePos == -1)
-		{
 			break;
-		}
 
 		origLinePos = ctx->linePos;
 		ctx->linePos = get_symbol(ctx->tokenized_line, ctx->linePos, cmd);
@@ -241,10 +262,7 @@ void exec_line(struct Context *ctx)
 		}
 
 		if (ctx->error != ERR_NONE)
-		{
-			ctx->running = false;
 			return;
-		}
 
 		if (ctx->jmpline != -1)
 			break;
@@ -261,178 +279,107 @@ void exec_line(struct Context *ctx)
 
 int exec_expr(struct Context *ctx)
 {
+	unsigned char exp[200];
 	unsigned char name[6];
-	char pending = '='; /* operation that is run on an operand */
-	bool operand;       /* this flag marks if an operand was parsed */
-	float value;
-	int j;
+	char str_value[10];
+	int ctr = 0;
+	int lpos = ctx->linePos;
+	int expr_error = EXPR_ERR_NONE;
+	double result = 0;
+	unsigned char varFound = 0;
 
-	while (true)
+	// replace any variables with their values before actually calling the expression parser
+	while (lpos != -1 && ctx->tokenized_line[lpos] != 0 && ctx->tokenized_line[lpos] != ':' &&
+		ctx->tokenized_line[lpos] != ';' &&	ctx->tokenized_line[lpos] != ',' &&
+		(ctx->tokenized_line[lpos] < 127 || ctx->tokenized_line[lpos] == TOKEN_AND || 
+		ctx->tokenized_line[lpos] == TOKEN_OR || ctx->tokenized_line[lpos] == TOKEN_ABS))
 	{
-		operand = false;
-		ctx->linePos = ignore_space(ctx->tokenized_line, ctx->linePos);
-
-		if (ctx->linePos == -1 || 
-			ctx->tokenized_line[ctx->linePos] == ':' ||
-			ctx->tokenized_line[ctx->linePos] == ';' ||
-			ctx->tokenized_line[ctx->linePos] == ',' ||
-			ctx->tokenized_line[ctx->linePos] > 127 )
-			break;
-
-		if (ISDIGIT(ctx->tokenized_line[ctx->linePos]))
+		if (ISALPHA(ctx->tokenized_line[lpos]))
 		{
-			ctx->linePos = get_float(ctx->tokenized_line, ctx->linePos, &value);
-			operand = true;
-		}
-		else
-			if (ISALPHA(ctx->tokenized_line[ctx->linePos]))
+			lpos = get_symbol(ctx->tokenized_line, lpos, name);
+
+			for (int j = 0; j < ctx->var_count; j++)
 			{
-				ctx->linePos = get_symbol(ctx->tokenized_line, ctx->linePos, name);
-
-				//if (compare(name, (unsigned char*)"THEN"))
-				//	break;
-
-				for (j = 0; j < ctx->var_count; j++)
+				if (compare(ctx->vars[j].name, name) && (ctx->vars[j].type == VAR_FLOAT))
 				{
-					if (compare(ctx->vars[j].name, name) && ctx->vars[j].type == VAR_FLOAT)
-					{
-						value = *((float*)ctx->vars[j].location);
-						operand = true;
-						break;
-					}
-					if (compare(ctx->vars[j].name, name) && (ctx->vars[j].type == VAR_INT))
-					{
-						value = *((int*)ctx->vars[j].location);
-						operand = true;
-						break;
-					}
+					double value = *((float*)ctx->vars[j].location);
+					snprintf(str_value, 10, "%f", value);
+					exp[ctr] = 0;
+					strcat((char*)exp, str_value);
+					ctr = strlen((const char*)exp);
+					varFound = 1;
+					break;
 				}
-				if (!operand)
+				if (compare(ctx->vars[j].name, name) && (ctx->vars[j].type == VAR_INT))
 				{
-					if (ctx->dsptr == 0)
-					{
-						ctx->dsptr++;
-						ctx->dstack[ctx->dsptr] = 0;
-					}
-					else
-						ctx->dstack[ctx->dsptr] = (ctx->dstack[ctx->dsptr] == 0);
-
-					var_add_update_float(ctx, name, ctx->dstack[ctx->dsptr--]); //, 1, 0);
-
-					for (j = 0; j < ctx->var_count; j++)
-					{
-						if (compare(ctx->vars[j].name, name) && ctx->vars[j].type == VAR_FLOAT)
-						{
-							value = *((float*)ctx->vars[j].location);
-							operand = true;
-							break;
-						}
-					}
-				}
-				else
-				{
-					int w = ignore_space(ctx->tokenized_line, ctx->linePos);
-					if (ctx->tokenized_line[w] == '(')
-					{
-						/* push array reference to data stack */
-						ctx->linePos = w;
-						ctx->dstack[++ctx->dsptr] = (int)pending;
-						//ctx->dstack[++ctx->dsptr] = &((void *)ctx->vars[j].location); 
-						ctx->dstack[++ctx->dsptr] = (int) '?';
-						pending = ctx->tokenized_line[ctx->linePos++];
-						operand = false;
-					}
+					int value = *((int*)ctx->vars[j].location);
+					snprintf(str_value, 10, "%d", value);
+					exp[ctr] = 0;
+					strcat((char*)exp, str_value);
+					ctr = strlen((const char*)exp);
+					varFound = 1;
+					break;
 				}
 			}
-			else
-				if (ISOP(ctx->tokenized_line[ctx->linePos]))
-				{
-					if (ctx->tokenized_line[ctx->linePos] == '(')
-					{
-						ctx->dsptr++;
-						ctx->dstack[ctx->dsptr] = (int)pending;
-						pending = ctx->tokenized_line[ctx->linePos++];
-					}
-					else
-						if (ctx->tokenized_line[ctx->linePos] == ')')
-						{
-							value = ctx->dstack[ctx->dsptr--];
-							pending = (char)ctx->dstack[ctx->dsptr--];
 
-							if (pending == '?')
-							{
-								/* dereference an array */
-								int index = ctx->dstack[ctx->dsptr--];
-								value = *((float*)ctx->vars[j].location + index);
-								pending = (char)ctx->dstack[ctx->dsptr--];
-							}
-
-							operand = true;
-							/* bypass closing parenthesis */
-							ctx->linePos++;
-						}
-						else
-						{
-							pending = ctx->tokenized_line[ctx->linePos++];
-						}
-				}
-				else
-					if (ctx->tokenized_line[ctx->linePos] == ']')
-					{
-						ctx->linePos++;
-						break;
-					}
-					else
-					{
-						printf("\n?Syntax error in %d", ctx->line);
-						ctx->running = false;
-						ctx->error = ERR_UNEXP;
-						ctx->linePos++;
-						break;
-					}
-
-		/* process pending operation with the operand value */
-		if (operand)
-		{
-			switch (pending)
+			if (varFound == 0)
 			{
-				case '=':
-					if (ctx->dsptr == 0)
-					{
-						ctx->dsptr++;
-						ctx->dstack[ctx->dsptr] = value;
-					}
-					else
-						ctx->dstack[ctx->dsptr] = (ctx->dstack[ctx->dsptr] == value);
-					break;
-				case '+': 
-					ctx->dstack[ctx->dsptr] += value; 
-					break;
-				case '-': ctx->dstack[ctx->dsptr] -= value;	break;
-				case '*':
-					ctx->dstack[ctx->dsptr] *= value;
-					break;
-				case '/':
-					if (value == 0)
-					{
-						term_printf("\n?Division by zero error in %d", ctx->line);
-						ctx->running = false;
-						ctx->error = ERR_UNEXP;
-					}
-					else
-						ctx->dstack[ctx->dsptr] /= value;
-					break;
-				//case '%': ctx->dstack[ctx->dsptr] %= value; break;
-				case '>': ctx->dstack[ctx->dsptr] = ctx->dstack[ctx->dsptr] > value; break;
-				case '<': ctx->dstack[ctx->dsptr] = ctx->dstack[ctx->dsptr] < value; break;
-				case '(':
-					ctx->dsptr++;
-					ctx->dstack[ctx->dsptr] = value;
-					break;
-			}	
+				double value = 0;
+
+				if (name[length(name) - 1] == '%')
+				{
+					snprintf(str_value, 10, "%f", value);
+					exp[ctr] = 0;
+					strcat((char*)exp, str_value);
+					ctr = strlen((const char*)exp);
+
+					var_add_update_int(ctx, name, ctx->dstack[ctx->dsptr--]);
+				}
+
+				else
+				{
+					snprintf(str_value, 10, "%f", value);
+					exp[ctr] = 0;
+					strcat((char*)exp, str_value);
+					ctr = strlen((const char*)exp);
+
+					var_add_update_float(ctx, name, ctx->dstack[ctx->dsptr--]);
+				}
+			}
+		}
+		else
+			exp[ctr++] = ctx->tokenized_line[lpos++];
+	}
+
+	exp[ctr] = 0;
+
+	expr_error = expr_eval(exp, &result);
+
+	switch (expr_error)
+	{
+		case EXPR_ERR_NONE:
+		{
+			ctx->dstack[++ctx->dsptr] = result;
+			break;
+		}
+		case EXPR_ERR_DIV_BY_ZERO:
+		{
+			ctx->error = ERR_DIV0;
+			ctx->error_line = ctx->line;
+			break;
+		}
+		default:
+		{
+			ctx->error = ERR_UNEXP;
+			ctx->error_line = ctx->line;
+			break;
 		}
 	}
-	return ctx->linePos;
+
+	ctx->linePos = lpos;
+	return lpos;
+
+
 }
 
 void exec_cmd_dim(struct Context *ctx)
@@ -482,43 +429,81 @@ void exec_cmd_end(struct Context *ctx)
 
 void exec_cmd_gosub(struct Context *ctx)
 {
-	exec_expr(ctx);
+	ctx->linePos = ignore_space(ctx->tokenized_line, ctx->linePos);
 
-	// store line number and next statement pos on stack
-	ctx->linePos = next_statement(ctx);
+	if (ensure_token(ctx->tokenized_line[ctx->linePos], DIGIT_LIST_COUNT, DIGIT_LIST))
+	{
+		exec_expr(ctx);
 
-	ctx->cstack[++ctx->csptr] = ctx->line;
-	ctx->cstack[++ctx->csptr] = ctx->linePos;
+		// store line number and next statement pos on stack
+		ctx->linePos = next_statement(ctx);
 
-	// set jump flag
-	ctx->jmpline = ctx->dstack[ctx->dsptr--];
-	ctx->linePos = 0;
+		ctx->cstack[++ctx->csptr] = ctx->line;
+		ctx->cstack[++ctx->csptr] = ctx->linePos;
+
+		// set jump flag
+		ctx->jmpline = ctx->dstack[ctx->dsptr--];
+		ctx->linePos = 0;
+
+		if (ll_find(ctx->jmpline) == NULL)
+		{
+			ctx->error = ERR_UNDEF;
+			ctx->error_line = ctx->line;
+			return;
+		}
+	}
+	else
+	{
+		ctx->error = ERR_UNEXP;
+		ctx->error_line = ctx->line;
+	}
 }
 
 void exec_cmd_goto(struct Context *ctx)
 {
-	exec_expr(ctx);
-	ctx->linePos = 0;
-	ctx->jmpline = ctx->dstack[ctx->dsptr--];
+	ctx->linePos = ignore_space(ctx->tokenized_line, ctx->linePos);
+
+	if (ensure_token(ctx->tokenized_line[ctx->linePos], DIGIT_LIST_COUNT, DIGIT_LIST))
+	{
+		exec_expr(ctx);
+
+		ctx->linePos = 0;
+		ctx->jmpline = ctx->dstack[ctx->dsptr--];
+		
+		if (ll_find(ctx->jmpline) == NULL)
+		{
+			ctx->error = ERR_UNDEF;
+			ctx->error_line = ctx->line;
+			return;
+		}
+	}
+	else
+	{
+		ctx->error = ERR_UNEXP;
+		ctx->error_line = ctx->line;
+	}
 }
 
 void exec_cmd_if(struct Context *ctx)
 {
+	ctx->linePos = ignore_space(ctx->tokenized_line, ctx->linePos);
+
 	ctx->linePos = exec_expr(ctx);
 
 	ctx->linePos = ignore_space(ctx->tokenized_line, ctx->linePos);
 
-	if (ctx->tokenized_line[ctx->linePos] != TOKEN_THEN)
+	if (ensure_token(ctx->tokenized_line[ctx->linePos], 1, TOKEN_THEN))
 	{
-		term_printf("\n?Syntax error in %d", ctx->line);
-		ctx->running = false;
-		ctx->error = ERR_UNEXP;
+		if (ctx->dstack[ctx->dsptr--] == -1)
+			return;
+		else
+			ctx->linePos = -1;
 	}
-
-	if (ctx->dstack[ctx->dsptr--])
-		return;
 	else
-		ctx->linePos = -1;
+	{
+		ctx->error = ERR_UNEXP;
+		ctx->error_line = ctx->line;
+	}
 }
 
 void exec_cmd_input(struct Context *ctx)
@@ -546,8 +531,6 @@ void exec_cmd_input(struct Context *ctx)
 		/* ensure semicolon */
 		if (ctx->tokenized_line[ctx->linePos] != ';')
 		{
-			term_printf("\n?Syntax error in %d", ctx->line);
-			ctx->running = false;
 			ctx->error = ERR_UNEXP;
 			return;
 		}
@@ -589,9 +572,8 @@ void exec_cmd_input(struct Context *ctx)
 
 			if (ch == 27)
 			{
-				ctx->running = false;
-				ctx->error = ERR_UNEXP;
-				term_printf("\n?Break in %d", ctx->line);
+				ctx->error = ERR_BREAK;
+				ctx->error_line = ctx->line;
 				return;
 			}
 
@@ -619,16 +601,15 @@ void exec_cmd_input(struct Context *ctx)
 	// anything after expression must be end of line or colon
 	if (ctx->linePos != -1 && ctx->tokenized_line[ctx->linePos] != ':')
 	{
-		ctx->running = false;
 		ctx->error = ERR_UNEXP;
-		printf("\n?Syntax error in %d", ctx->line);
+		ctx->error_line = ctx->line;
 		return;
 	}
 }
 
 void exec_cmd_let(struct Context *ctx)
 {
-	unsigned char name[VAR_NAMESZ+2];  // 2 chars, var type, \0
+	unsigned char name[VAR_NAMESZ+2]; // 2 chars, var type, \0
 	int j = 0;
 
 	ctx->linePos = ignore_space(ctx->tokenized_line, ctx->linePos);
@@ -642,32 +623,33 @@ void exec_cmd_let(struct Context *ctx)
 		j = ctx->dstack[ctx->dsptr--];
 	}
 
-	if (ctx->tokenized_line[ctx->linePos] != '=')
+	// anything after token must be equal sign
+	if (ensure_token(ctx->tokenized_line[ctx->linePos], 1, '='))
 	{
-		ctx->running = false;
-		ctx->error = ERR_UNEXP;
-		term_printf("\n?Syntax error in %d", ctx->line);
-		return;
+		ctx->linePos++;
+		exec_expr(ctx);
+
+		ctx->linePos = ignore_space(ctx->tokenized_line, ctx->linePos);
+
+		// anything after expression must be end of line or colon
+		if (ctx->linePos != -1 && ctx->tokenized_line[ctx->linePos] != ':')
+		{
+			ctx->error = ERR_UNEXP;
+			ctx->error_line = ctx->line;
+			return;
+		}
+
+		if (name[length(name) - 1] == '%')
+			var_add_update_int(ctx, name, ctx->dstack[ctx->dsptr--]);
+		else
+			var_add_update_float(ctx, name, ctx->dstack[ctx->dsptr--]);
 	}
-
-	exec_expr(ctx);
-
-	ctx->linePos = ignore_space(ctx->tokenized_line, ctx->linePos);
-
-	// anything after expression must be end of line or colon
-	if (ctx->linePos != -1 && ctx->tokenized_line[ctx->linePos] != ':')
-	{
-		ctx->running = false;
-		ctx->error = ERR_UNEXP;
-		term_printf("\n?Syntax error in %d", ctx->line);
-		return;
-	}
-
-	if (name[length(name)-1] == '%')
-		var_add_update_int(ctx, name, ctx->dstack[ctx->dsptr--]);
 	else
-		var_add_update_float(ctx, name, ctx->dstack[ctx->dsptr--]);
-
+	{
+		ctx->error = ERR_UNEXP;
+		ctx->error_line = ctx->line;
+		return;
+	}
 }
 
 void exec_cmd_list()
@@ -870,9 +852,8 @@ void exec_cmd_return(struct Context *ctx)
 {
 	if (ctx->csptr == 0)
 	{
-		ctx->running = false;
-		ctx->error = ERR_UNEXP;
-		term_printf("\n?RETURN without GOSUB in %d", ctx->line);
+		ctx->error = ERR_RTRN_WO_GSB;
+		ctx->error_line = ctx->line;
 		return;
 	}
 
@@ -1317,8 +1298,6 @@ void tokenize(struct Context* ctx, const unsigned char* input, unsigned char *ou
 			}
 		}
 
-
-
 		if (quoteMode == true)
 		{
 			if(input[i] == '\"')
@@ -1332,4 +1311,22 @@ void tokenize(struct Context* ctx, const unsigned char* input, unsigned char *ou
 	to_uppercase(output);
 }
 
+bool ensure_token(unsigned char c, int tokenCount, ...)
+{
+	// set up variable argument list
+	va_list ap;
+	va_start(ap, tokenCount);
 
+	for (int x = 0; x < tokenCount; x++)
+	{
+		unsigned char t = (unsigned char)va_arg(ap, int);
+		if (c == t)
+		{
+			va_end(ap);
+			return true;
+		}	
+	}
+
+	va_end(ap);
+	return false;
+}

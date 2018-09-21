@@ -12,22 +12,28 @@ extern "C"
 
 #define VAR_NAMESZ 2       /* maximum variable name length */
 #define CMD_NAMESZ 10       /* limit for command words */
-#define CMD_COUNT 12        /* number of available commands */
+#define CMD_COUNT 15        /* number of available commands */
 #define DATA_STSZ 16        /* depth of calculation */
 #define CALL_STSZ 16        /* subroutine call depth */
 #define LINE_SZ 80          /* line width restriction */
 #define CODE_SZ 4096        /* program size in characters */
 #define FILE_SUPPORT 0   	/* 0 - no, 1 - yes */
 
-#define ERR_NONE     0
-#define ERR_UNDEF   -1
-#define ERR_UNEXP   -2
-#define ERR_UNKNOWN -3
+#define ERR_NONE		0
+#define ERR_UNDEF		-1
+#define ERR_UNEXP		-2
+#define ERR_UNKNOWN		-3
+#define ERR_BREAK		-4
+#define ERR_DIV0		-5
+#define ERR_RTRN_WO_GSB	-6
 
 #define VAR_NONE	0
 #define VAR_INT		1
 #define VAR_FLOAT	2
 #define VAR_STRING	3
+
+#define DIGIT_LIST  '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
+#define DIGIT_LIST_COUNT 10
 
 #define BINDCMD(c,n,f,t)  do {\
 							strcpy((char *)((c)->name), (char *)n);\
@@ -64,6 +70,7 @@ struct Context
 	int jmpline;
 	int top_line;
 	char error;
+	int error_line;
 	bool running;
 	unsigned char* original_line;
 	unsigned char* tokenized_line;
@@ -101,6 +108,7 @@ bool compare(const unsigned char *a, const unsigned char *b);
 void clear(unsigned char *dst, int size);
 void join(unsigned char *dst, const unsigned char *src);
 void get_input(unsigned char *s);
+bool ensure_token(unsigned char c, int tokenCount, ...);
 
 	// sbparse
 #define ISDIGIT(c) (((c)>='0')&&((c)<='9'))

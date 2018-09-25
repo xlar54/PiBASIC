@@ -198,13 +198,16 @@ void exec_program(struct Context* ctx)
 				case ERR_RTRN_WO_GSB:
 					term_printf("\n?RETURN without GOSUB error");
 					break;
+				case ERR_TYPE_MISMATCH:
+					term_printf("\n?Type mismatch error");
+					break;
 				default:
 					term_printf("\n?Unspecified error");
 					break;
 			}
 
 			if(ctx->error_line != -1)
-				term_printf(" in line %d", ctx->error_line);
+				term_printf(" in %d", ctx->error_line);
 
 			ctx->error = ERR_NONE;
 			ctx->running = false;
@@ -277,6 +280,136 @@ void exec_line(struct Context *ctx)
 	}
 }
 
+int exec_strexpr(struct Context *ctx, int* len)
+{
+	unsigned char *exp;
+	unsigned char name[6];
+	char str_value[10];
+	int ctr = 0;
+	int lpos = ctx->linePos;
+	int expr_error = EXPR_ERR_NONE;
+	double result = 0;
+	unsigned char *sresult;
+	unsigned char varFound = 0;
+	int quoteMode = 0;
+
+	exp = (unsigned char*)malloc(sizeof(unsigned char*) * 255);
+
+	while (true)
+	{
+		if (quoteMode == 0)
+		{
+			lpos = ignore_space(ctx->tokenized_line, lpos);
+			if (lpos == -1 || ensure_token(ctx->tokenized_line[lpos], 3, ':', ',', ';'))
+				break;
+		}
+
+		// check if variable
+		if (ISALPHA(ctx->tokenized_line[lpos]))
+		{
+			lpos = get_symbol(ctx->tokenized_line, lpos, name);
+
+			for (int j = 0; j < ctx->var_count; j++)
+			{
+				if (compare(ctx->vars[j].name, name))
+				{
+					if (ctx->vars[j].type == VAR_INT || ctx->vars[j].type == VAR_FLOAT)
+					{
+						expr_error = ERR_TYPE_MISMATCH;
+						break;
+					}
+					else
+					if (ctx->vars[j].type == VAR_STRING)
+					{
+						unsigned char *value = (unsigned char*)ctx->vars[j].location;
+						exp[ctr] = 0;
+						strcat((char*)exp, (char*)value);
+						ctr = strlen((const char*)exp);
+						varFound = 1;
+						break;
+					}
+				}
+			}
+
+			if (varFound == 0)
+			{
+				strcat((char*)exp, "");
+				exp[ctr] = 0;
+				var_add_update_string(ctx, name, (exp + ctr), 1);
+			}
+
+			lpos = ignore_space(ctx->tokenized_line, lpos);
+
+			if (lpos == -1 || ensure_token(ctx->tokenized_line[lpos], 3, ':', ',', ';'))
+				break;
+
+			// expect plus sign
+			if (ensure_token(ctx->tokenized_line[lpos], 1, '+'))
+			{
+				lpos++;
+				lpos = ignore_space(ctx->tokenized_line, lpos);
+			}
+			else
+			{
+				ctx->error = ERR_UNEXP;
+				ctx->error_line = ctx->line;
+				break;
+			}
+		}
+		else
+		{
+			if (ctx->tokenized_line[lpos] == '\"' && quoteMode == 0)
+			{
+				quoteMode = 1;
+				lpos++;
+			}
+			else
+			if (quoteMode == 1)
+			{
+				if (ctx->tokenized_line[lpos] == '\"')
+				{
+					quoteMode = 0;
+					lpos++;
+
+					lpos = ignore_space(ctx->tokenized_line, lpos);
+
+					if (lpos == -1 || ensure_token(ctx->tokenized_line[lpos], 3, ':', ',', ';'))
+						break;
+
+					// expect plus sign
+					if (ensure_token(ctx->tokenized_line[lpos], 1, '+'))
+						lpos++;
+					else
+					{
+						ctx->error = ERR_UNEXP;
+						ctx->error_line = ctx->line;
+						break;
+					}
+				}
+				else
+					exp[ctr++] = ctx->tokenized_line[lpos++];
+			}
+			else
+			{
+				ctx->error = ERR_UNEXP;
+				ctx->error_line = ctx->line;
+				break;
+			}
+		}	
+	}
+
+	exp[ctr] = 0;
+
+	if(ctx->error == EXPR_ERR_NONE)
+	{
+		*len = strlen((char*)exp);
+		ctx->strPtr = exp;
+	}
+
+	ctx->linePos = lpos;
+	return lpos;
+}
+
 int exec_expr(struct Context *ctx)
 {
 	unsigned char exp[200];
@@ -286,13 +419,14 @@ int exec_expr(struct Context *ctx)
 	int lpos = ctx->linePos;
 	int expr_error = EXPR_ERR_NONE;
 	double result = 0;
+	unsigned char *sresult;
 	unsigned char varFound = 0;
 
 	// replace any variables with their values before actually calling the expression parser
 	while (lpos != -1 && ctx->tokenized_line[lpos] != 0 && ctx->tokenized_line[lpos] != ':' &&
 		ctx->tokenized_line[lpos] != ';' &&	ctx->tokenized_line[lpos] != ',' &&
 		(ctx->tokenized_line[lpos] < 127 || ctx->tokenized_line[lpos] == TOKEN_AND || 
-		ctx->tokenized_line[lpos] == TOKEN_OR || ctx->tokenized_line[lpos] == TOKEN_ABS))
+			ctx->tokenized_line[lpos] == TOKEN_OR || ctx->tokenized_line[lpos] == TOKEN_ABS))
 	{
 		if (ISALPHA(ctx->tokenized_line[lpos]))
 		{
@@ -300,20 +434,24 @@ int exec_expr(struct Context *ctx)
 
 			for (int j = 0; j < ctx->var_count; j++)
 			{
-				if (compare(ctx->vars[j].name, name) && (ctx->vars[j].type == VAR_FLOAT))
+				if (compare(ctx->vars[j].name, name))
 				{
-					double value = *((float*)ctx->vars[j].location);
-					snprintf(str_value, 10, "%f", value);
-					exp[ctr] = 0;
-					strcat((char*)exp, str_value);
-					ctr = strlen((const char*)exp);
-					varFound = 1;
-					break;
-				}
-				if (compare(ctx->vars[j].name, name) && (ctx->vars[j].type == VAR_INT))
-				{
-					int value = *((int*)ctx->vars[j].location);
-					snprintf(str_value, 10, "%d", value);
+					if (ctx->vars[j].type == VAR_STRING)
+					{
+						expr_error = ERR_TYPE_MISMATCH;
+						break;
+					}
+					if (ctx->vars[j].type == VAR_FLOAT)
+					{
+						double value = *((float*)ctx->vars[j].location);
+						snprintf(str_value, 10, "%f", value);
+					}
+					if (ctx->vars[j].type == VAR_INT)
+					{
+						int value = *((int*)ctx->vars[j].location);
+						snprintf(str_value, 10, "%d", value);
+					}
+
 					exp[ctr] = 0;
 					strcat((char*)exp, str_value);
 					ctr = strlen((const char*)exp);
@@ -324,27 +462,23 @@ int exec_expr(struct Context *ctx)
 
 			if (varFound == 0)
 			{
+				if (name[length(name) - 1] == '$')
+				{
+					expr_error = ERR_TYPE_MISMATCH;
+					break;
+				}
+				else
+				if (name[length(name) - 1] == '%')
+					var_add_update_int(ctx, name, ctx->dstack[ctx->dsptr--]);
+				else
+					var_add_update_float(ctx, name, ctx->dstack[ctx->dsptr--]);
+				
 				double value = 0;
 
-				if (name[length(name) - 1] == '%')
-				{
-					snprintf(str_value, 10, "%f", value);
-					exp[ctr] = 0;
-					strcat((char*)exp, str_value);
-					ctr = strlen((const char*)exp);
-
-					var_add_update_int(ctx, name, ctx->dstack[ctx->dsptr--]);
-				}
-
-				else
-				{
-					snprintf(str_value, 10, "%f", value);
-					exp[ctr] = 0;
-					strcat((char*)exp, str_value);
-					ctr = strlen((const char*)exp);
-
-					var_add_update_float(ctx, name, ctx->dstack[ctx->dsptr--]);
-				}
+				snprintf(str_value, 10, "%f", value);
+				exp[ctr] = 0;
+				strcat((char*)exp, str_value);
+				ctr = strlen((const char*)exp);
 			}
 		}
 		else
@@ -353,7 +487,8 @@ int exec_expr(struct Context *ctx)
 
 	exp[ctr] = 0;
 
-	expr_error = expr_eval(exp, &result);
+	if(expr_error == EXPR_ERR_NONE)
+		expr_error = expr_eval(exp, &result);
 
 	switch (expr_error)
 	{
@@ -365,6 +500,12 @@ int exec_expr(struct Context *ctx)
 		case EXPR_ERR_DIV_BY_ZERO:
 		{
 			ctx->error = ERR_DIV0;
+			ctx->error_line = ctx->line;
+			break;
+		}
+		case ERR_TYPE_MISMATCH:
+		{
+			ctx->error = ERR_TYPE_MISMATCH;
 			ctx->error_line = ctx->line;
 			break;
 		}
@@ -611,6 +752,7 @@ void exec_cmd_let(struct Context *ctx)
 {
 	unsigned char name[VAR_NAMESZ+2]; // 2 chars, var type, \0
 	int j = 0;
+	int len = 0;
 
 	ctx->linePos = ignore_space(ctx->tokenized_line, ctx->linePos);
 	ctx->linePos = get_symbol(ctx->tokenized_line, ctx->linePos, name);
@@ -627,8 +769,12 @@ void exec_cmd_let(struct Context *ctx)
 	if (ensure_token(ctx->tokenized_line[ctx->linePos], 1, '='))
 	{
 		ctx->linePos++;
-		exec_expr(ctx);
 
+		if (name[length(name) - 1] == '$')
+			exec_strexpr(ctx, &len);
+		else
+			exec_expr(ctx);
+		
 		ctx->linePos = ignore_space(ctx->tokenized_line, ctx->linePos);
 
 		// anything after expression must be end of line or colon
@@ -641,6 +787,8 @@ void exec_cmd_let(struct Context *ctx)
 
 		if (name[length(name) - 1] == '%')
 			var_add_update_int(ctx, name, ctx->dstack[ctx->dsptr--]);
+		else if (name[length(name) - 1] == '$')
+			var_add_update_string(ctx, name, ctx->strPtr, len);
 		else
 			var_add_update_float(ctx, name, ctx->dstack[ctx->dsptr--]);
 	}
@@ -792,38 +940,40 @@ void exec_cmd_print(struct Context *ctx)
 {
 	bool eol = true;
 	bool quoteMode = false;
+	unsigned char val[200];
 
 	while (true)
 	{
-		if (quoteMode == false)
-			ctx->linePos = ignore_space(ctx->tokenized_line, ctx->linePos);
+		ctx->linePos = ignore_space(ctx->tokenized_line, ctx->linePos);
 
-		if (ctx->linePos == -1 || ctx->tokenized_line[ctx->linePos] == ':')
+		if (ctx->linePos == -1 || ensure_token(ctx->tokenized_line[ctx->linePos], 1, ':'))
 			break;
 
-		if (ctx->tokenized_line[ctx->linePos] == '\"' && quoteMode == false)
+		ctx->linePos = get_symbol(ctx->tokenized_line, ctx->linePos, val);
+
+		// print string expression
+		if (val[length(val) - 1] == '$' || val[0] == '\"')
 		{
-			quoteMode = true;
-			ctx->linePos++;	// skip quote
-
-			while (ctx->tokenized_line[ctx->linePos] != '\"' && ctx->tokenized_line[ctx->linePos] != '\0')
-				term_putchar(ctx->tokenized_line[ctx->linePos++]);
-
-			if (ctx->tokenized_line[ctx->linePos] == '\"')
+			ctx->linePos = ctx->linePos - length(val);
+			int len = 0;
+			ctx->linePos = exec_strexpr(ctx, &len);
+			if (ctx->error == ERR_NONE)
 			{
-				ctx->linePos++; // skip quote
-				quoteMode = false;
-				ctx->linePos = ignore_space(ctx->tokenized_line, ctx->linePos);
-			}
+				term_printf("%s", ctx->strPtr);
+				free(ctx->strPtr);
+			}	
+			else
+				break;
 		}
 		else
 		{
+			// print numeric expression
+			ctx->linePos = ctx->linePos - length(val);
 			ctx->linePos = exec_expr(ctx);
 			if (ctx->error == ERR_NONE)
 				term_printf("%g", (double)ctx->dstack[ctx->dsptr--]);
 			else
 				break;
-
 		}
 
 		if (ctx->tokenized_line[ctx->linePos] == ';')
@@ -831,15 +981,15 @@ void exec_cmd_print(struct Context *ctx)
 			ctx->linePos++;
 			eol = false;
 		}
-		
+
 		if (ctx->tokenized_line[ctx->linePos] == ',')
 		{
 			ctx->linePos++;
-			term_printf("     ");
+			printf("     ");
 		}
 	}
 
-	if (eol) term_putchar('\n');
+	if (eol) putchar('\n');
 }
 
 void exec_cmd_rem(struct Context *ctx)
@@ -1011,32 +1161,95 @@ void var_add_update_float(struct Context *ctx, const unsigned char *key, float v
 
 }
 
+void var_add_update_string(struct Context *ctx, const unsigned char *key, unsigned char* value, int length)
+{
+	int j;
+
+	// find and update the variable
+	for (j = 0; j < ctx->var_count; j++)
+	{
+		if (compare(ctx->vars[j].name, key) && ctx->vars[j].type == VAR_STRING)
+		{
+			free(ctx->vars[j].location);
+			ctx->vars[j].location = (unsigned char*)malloc(sizeof(unsigned char*) * length+1);
+
+			for(int x=0;x<length;x++)
+				*((char*)ctx->vars[j].location+x) = value[x];
+
+			*((char*)ctx->vars[j].location + length) = 0;
+			return;
+		}
+	}
+
+	// variable not found.  add it
+	ctx->var_count = j + 1;
+	strcpy((char *)ctx->vars[ctx->var_count - 1].name, (char *)key);
+	ctx->vars[ctx->var_count - 1].location = (unsigned char *)malloc(sizeof(unsigned char*) * length + 1);
+	ctx->vars[ctx->var_count - 1].type = VAR_STRING;
+	
+	for (int x = 0; x<length; x++)
+		*((unsigned char*)ctx->vars[j].location + x) = value[x];
+
+	*((unsigned char*)ctx->vars[j].location + length) = 0;
+
+}
+
 // sbparse
 
 int get_symbol(const unsigned char *s, int i, unsigned char *t)
 {
-	while (s[i] != '\0')
-	{
-		if (s[i] > 127)
-		{
-			*(t++) = s[i++];
-			break;
-		}
+	int done = 0;
+	int type = 0;
 
-		if (ISALPHA(s[i]))
-			*(t++) = s[i++];
-		else
-			break;
+	if (s[i] > 127) type = 0; // cmd / func
+	if (ISALPHA(s[i])) type = 1; //var
+	if (s[i] == '\"') 
+	{
+		*(t++) = s[i++];
+		type = 2; // str
 	}
 
-	// string
-	if (s[i] == '$')
-		*(t++) = s[i++];
+	while (true)
+	{
+		if (s[i] == 0)
+			break;
 
-	// int
-	if (s[i] == '%')
-		*(t++) = s[i++];
-	
+		if(type == 0)
+		{
+			if (s[i] > 127)
+				*(t++) = s[i++];
+			break;
+		}
+		else
+		if (type == 1)
+		{
+			if (ISALPHA(s[i]))
+				*(t++) = s[i++];
+
+			// string
+			if (s[i] == '$')
+				*(t++) = s[i++];
+
+			// int
+			if (s[i] == '%')
+				*(t++) = s[i++];
+
+			break;
+		}
+		else
+		if(type == 2)
+		{
+			if (s[i] != '\"')
+				*(t++) = s[i++];
+			else
+			{
+				*(t++) = s[i++];
+				break;
+			}
+				
+		}
+	}
+
 	*t = 0;
 	return i;
 }

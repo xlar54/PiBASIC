@@ -19,13 +19,14 @@ extern "C"
 #define CODE_SZ 4096        /* program size in characters */
 #define FILE_SUPPORT 0   	/* 0 - no, 1 - yes */
 
-#define ERR_NONE		0
-#define ERR_UNDEF		-1
-#define ERR_UNEXP		-2
-#define ERR_UNKNOWN		-3
-#define ERR_BREAK		-4
-#define ERR_DIV0		-5
-#define ERR_RTRN_WO_GSB	-6
+#define ERR_NONE			0
+#define ERR_UNDEF			-1
+#define ERR_UNEXP			-2
+#define ERR_UNKNOWN			-3
+#define ERR_BREAK			-4
+#define ERR_DIV0			-5
+#define ERR_RTRN_WO_GSB		-6
+#define ERR_TYPE_MISMATCH	-7
 
 #define VAR_NONE	0
 #define VAR_INT		1
@@ -65,6 +66,7 @@ struct Context
 	int cstack[CALL_STSZ];
 	int dsptr;
 	int csptr;
+	unsigned char *strPtr;
 	int allocated;
 	int line;
 	int jmpline;
@@ -82,6 +84,7 @@ void exec_init(struct Context *ctx);
 void exec_program(struct Context* ctx);
 void exec_line(struct Context *ctx);
 int exec_expr(struct Context *ctx);
+int exec_strexpr(struct Context *ctx, int* len);
 	
 void exec_cmd_dim(struct Context *ctx);
 void exec_cmd_dir();
@@ -103,6 +106,7 @@ void exec_cmd_then(struct Context *ctx);
 void var_clear_all(struct Context *ctx);
 void var_add_update_int(struct Context *ctx, const unsigned char *key, int value);
 void var_add_update_float(struct Context *ctx, const unsigned char *key, float value);
+void var_add_update_string(struct Context *ctx, const unsigned char *key, unsigned char* value, int length);
 	
 bool compare(const unsigned char *a, const unsigned char *b);
 void clear(unsigned char *dst, int size);

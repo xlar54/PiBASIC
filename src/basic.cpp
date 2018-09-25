@@ -652,48 +652,45 @@ void exec_cmd_input(struct Context *ctx)
 	unsigned char name[VAR_NAMESZ+3], ch;
 	float value = 0;
 	int j;
+	int promptCtr = 0;
+	unsigned char prompt[160] = { 0 };
 
 	ctx->linePos = ignore_space(ctx->tokenized_line, ctx->linePos);
+
+	if (ctx->linePos == -1 || ensure_token(ctx->tokenized_line[ctx->linePos], 1, ':'))
+	{
+		ctx->error = ERR_UNEXP;
+		ctx->error_line = ctx->line;
+		return;
+	}
+	
 	if (ctx->tokenized_line[ctx->linePos] == '\"')
 	{
 		ctx->linePos++;
 
-		int tempStackPtr = ctx->dsptr;
-
 		while (ctx->tokenized_line[ctx->linePos] != '\"')
-		{
-			// push string to stack
-			ctx->dstack[ctx->dsptr++] = ctx->tokenized_line[ctx->linePos++];
-		}
+			prompt[promptCtr++] = ctx->tokenized_line[ctx->linePos++];
+
+		prompt[promptCtr] = 0;
 
 		/* ignore quotation mark */
 		ctx->linePos++;
 
 		/* ensure semicolon */
-		if (ctx->tokenized_line[ctx->linePos] != ';')
+		if (ensure_token(ctx->tokenized_line[ctx->linePos], 1, ';'))
+		{
+			term_printf("%s", prompt);
+			ctx->linePos++;
+		}
+		else
 		{
 			ctx->error = ERR_UNEXP;
+			ctx->error_line = ctx->line;
 			return;
 		}
-
-		/* pop the stack, print the prompt */
-		for(int ctr=tempStackPtr; ctr<ctx->dsptr; ctr++)
-		{
-			term_putchar(ctx->dstack[ctr]);
-		}
-
-		ctx->dsptr = tempStackPtr;
 	}
 
 	ctx->linePos = ignore_space(ctx->tokenized_line, ctx->linePos);
-
-	/* ignore semicolon */
-	if (ctx->tokenized_line[ctx->linePos] == ';')
-	{
-		ctx->linePos++;
-		ctx->linePos = ignore_space(ctx->tokenized_line, ctx->linePos);
-	}
-
 	ctx->linePos = get_symbol(ctx->tokenized_line, ctx->linePos, name);
 
 	ch = 0;
@@ -733,9 +730,15 @@ void exec_cmd_input(struct Context *ctx)
 		}
 	}
 
-	get_float(buffer, 0, &value);
-
-	var_add_update_float(ctx, name, value);
+	if (name[length(name) - 1] == '$')
+	{
+		var_add_update_string(ctx, name, buffer, length(buffer));
+	}
+	else
+	{
+		get_float(buffer, 0, &value);
+		var_add_update_float(ctx, name, value);
+	}
 	
 	ctx->linePos = ignore_space(ctx->tokenized_line, ctx->linePos);
 	
@@ -985,11 +988,11 @@ void exec_cmd_print(struct Context *ctx)
 		if (ctx->tokenized_line[ctx->linePos] == ',')
 		{
 			ctx->linePos++;
-			printf("     ");
+			term_printf("     ");
 		}
 	}
 
-	if (eol) putchar('\n');
+	if (eol) term_putchar('\n');
 }
 
 void exec_cmd_rem(struct Context *ctx)
@@ -1082,7 +1085,7 @@ void exec_cmd_save(unsigned char* filename)
 		while (ptr != NULL) 
 		{
 			char lnbuff[160] = { 0 };
-			snprintf(lnbuff, sizeof(lnbuff), "%d %s", ptr->linenum, ptr->data);
+			snprintf(lnbuff, sizeof(lnbuff), "%d %s\n", ptr->linenum, ptr->data);
 			f_puts(lnbuff, &fp);
 			ptr = ptr->next;
 		}

@@ -64,7 +64,8 @@ int expr_priority(unsigned char *x)
 		return 0;
 	if (strcmp((const char*)x, (const char*)tkn_and) == 0 || strcmp((const char*)x, (const char*)tkn_or) == 0)
 		return 1;
-	if (strcmp((const char*)x, "=") == 0 || strcmp((const char*)x, ">") == 0 || strcmp((const char*)x, "<") == 0 || strcmp((const char*)x, "<=") == 0 || strcmp((const char*)x, ">=") == 0)
+	if (strcmp((const char*)x, "=") == 0 || strcmp((const char*)x, ">") == 0 || strcmp((const char*)x, "<") == 0 
+		|| strcmp((const char*)x, "<=") == 0 || strcmp((const char*)x, ">=") == 0 || strcmp((const char*)x, "<>") == 0)
 		return 2;
 	if (strcmp((const char*)x, "+") == 0 || strcmp((const char*)x, "-") == 0)
 		return 3;
@@ -190,6 +191,11 @@ int expr_infix_to_postfix(unsigned char *exp, unsigned char*postfix)
 				tkn[0] = '<'; tkn[1] = '=';  tkn[2] = 0; e++;
 			}
 			else
+			if (*e == '<' && *(e + 1) == '>')
+			{
+				tkn[0] = '<'; tkn[1] = '>';  tkn[2] = 0; e++;
+			}
+			else
 			{
 				tkn[0] = *e;
 				tkn[1] = 0;
@@ -296,6 +302,12 @@ int expr_eval_postfix(unsigned char* postfix, double* result)
 			if (*e == '<' && *(e + 1) == '=')
 			{
 				n3 = -(atof((const char*)sn2) <= atof((const char*)sn1));
+				e++;
+			}
+			else
+			if (*e == '<' && *(e + 1) == '>')
+			{
+				n3 = -(atof((const char*)sn2) != atof((const char*)sn1));
 				e++;
 			}
 			else

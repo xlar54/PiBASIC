@@ -7,16 +7,29 @@ Build with GNU Tools ARM Embedded
 Current command list:
 
 DIR
+
 LOAD "file"
+
 SAVE "file"
+
 REM
+
 PRINT
+
 INPUT
+
 IF / THEN
+
 GOTO
+
 GOSUB
+
 RETURN
+
 END
+
 LET
+
 LIST
+
 NEW

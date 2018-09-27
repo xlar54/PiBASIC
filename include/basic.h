@@ -33,6 +33,30 @@ extern "C"
 #define VAR_FLOAT	2
 #define VAR_STRING	3
 
+#define TOKEN_TYPE_UNKNOWN		0
+#define TOKEN_TYPE_KEYWORD		1
+#define TOKEN_TYPE_OPERATOR		2
+#define TOKEN_TYPE_EQUALITY		3
+#define TOKEN_TYPE_INT_LIT		4
+#define TOKEN_TYPE_FLT_LIT		5
+#define TOKEN_TYPE_STR_LIT		6
+#define TOKEN_TYPE_STR_VAR		7
+#define TOKEN_TYPE_INT_VAR		8
+#define TOKEN_TYPE_FLT_VAR		9
+#define TOKEN_TYPE_INT_FUNC		10
+#define TOKEN_TYPE_FLT_FUNC		11
+#define TOKEN_TYPE_STR_FUNC		12
+#define TOKEN_TYPE_DELIMITER	13
+#define TOKEN_TYPE_EOL			14
+
+struct Token {
+	int type;
+	unsigned char *token;
+};
+
+typedef Token TokenType;
+
+
 #define DIGIT_LIST  '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
 #define DIGIT_LIST_COUNT 10
 
@@ -125,6 +149,7 @@ bool ensure_token(unsigned char c, int tokenCount, ...);
                         ||((c)=='%'))
 
 int get_symbol(const unsigned char *s, int i, unsigned char *t);
+int get_token(const unsigned char *s, int i, TokenType* token);
 int get_int(const unsigned char *s, int i, int *num);
 int get_float(const unsigned char* s, int i, float *fv);
 int ignore_space(const unsigned char *s, int i);

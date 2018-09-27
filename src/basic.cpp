@@ -12,10 +12,12 @@ extern "C"
 #include "expr.h"
 }
 
+#define _BUILD_NUM_ "0.0.5"
+
 void basic_main()
 {
 	term_printf("\n                 The Raspberry Pi BASIC Development System");
-	term_printf("\n                       Operating System Version 1.0");
+	term_printf("\n\n                       Operating System Version %s", _BUILD_NUM_);
 	term_printf("\n\nReady.\n");
 
 	struct Context ctx;
@@ -293,6 +295,8 @@ int exec_strexpr(struct Context *ctx, int* len)
 	unsigned char varFound = 0;
 	int quoteMode = 0;
 
+	unsigned char *str1 = NULL;
+
 	exp = (unsigned char*)malloc(sizeof(unsigned char*) * 255);
 
 	while (true)
@@ -340,7 +344,7 @@ int exec_strexpr(struct Context *ctx, int* len)
 
 			lpos = ignore_space(ctx->tokenized_line, lpos);
 
-			if (lpos == -1 || ensure_token(ctx->tokenized_line[lpos], 3, ':', ',', ';'))
+			if (lpos == -1 || ensure_token(ctx->tokenized_line[lpos], 7, ':', ',', ';', '=', '<', '>', TOKEN_THEN))
 				break;
 
 			// expect plus sign
@@ -373,7 +377,7 @@ int exec_strexpr(struct Context *ctx, int* len)
 
 					lpos = ignore_space(ctx->tokenized_line, lpos);
 
-					if (lpos == -1 || ensure_token(ctx->tokenized_line[lpos], 3, ':', ',', ';'))
+					if (lpos == -1 || ensure_token(ctx->tokenized_line[lpos], 7, ':', ',', ';','=','<', '>', TOKEN_THEN))
 						break;
 
 					// expect plus sign
@@ -627,9 +631,68 @@ void exec_cmd_goto(struct Context *ctx)
 
 void exec_cmd_if(struct Context *ctx)
 {
-	ctx->linePos = ignore_space(ctx->tokenized_line, ctx->linePos);
+	TokenType tkn;
+	tkn.token = (unsigned char*)malloc(sizeof(unsigned char*) * 160);
+	get_token(ctx->tokenized_line, ctx->linePos, &tkn);
 
-	ctx->linePos = exec_expr(ctx);
+	int len;
+	int result1 = -1;
+	int result2 = 0;
+
+	if (tkn.type == TOKEN_TYPE_STR_LIT || tkn.type == TOKEN_TYPE_STR_VAR || tkn.type == TOKEN_TYPE_STR_FUNC)
+	{
+		ctx->linePos = exec_strexpr(ctx, &len);
+
+		get_token(ctx->tokenized_line, ctx->linePos, &tkn);
+		if (tkn.type == TOKEN_TYPE_EQUALITY)
+		{
+			if (strcmp((char *)tkn.token, "=") == 0)
+				ctx->linePos++;
+			else				
+			if (strcmp((char *)tkn.token, "<>") == 0)
+			{
+				result1 = 0;
+				result2 = -1;
+				ctx->linePos += 2;
+			}
+			else
+			{
+				ctx->error = ERR_UNEXP;
+				ctx->error_line = ctx->line;
+			}
+
+			unsigned char *str1 = (unsigned char *)malloc(sizeof(unsigned char) * len);
+			str1 = ctx->strPtr;
+
+			TokenType tkn2;
+			tkn2.token = (unsigned char*)malloc(sizeof(unsigned char*) * 160);
+			get_token(ctx->tokenized_line, ctx->linePos, &tkn2);
+
+			if (tkn2.type == TOKEN_TYPE_STR_LIT || tkn2.type == TOKEN_TYPE_STR_VAR || tkn2.type == TOKEN_TYPE_STR_FUNC)
+			{
+				ctx->linePos = exec_strexpr(ctx, &len);
+
+				if (strcmp((char *)ctx->strPtr, (char *)str1) == 0)
+					ctx->dstack[++ctx->dsptr] = result1;
+				else
+					ctx->dstack[++ctx->dsptr] = result2;
+			}
+			else
+			{
+				ctx->error = ERR_UNEXP;
+				ctx->error_line = ctx->line;
+			}
+
+			free(str1);
+			free(tkn2.token);
+		}
+	}
+	else
+	if (tkn.type == TOKEN_TYPE_INT_LIT || tkn.type == TOKEN_TYPE_INT_VAR || tkn.type == TOKEN_TYPE_INT_FUNC ||
+		tkn.type == TOKEN_TYPE_FLT_LIT || tkn.type == TOKEN_TYPE_FLT_VAR || tkn.type == TOKEN_TYPE_FLT_FUNC || tkn.type == TOKEN_TYPE_OPERATOR)
+		ctx->linePos = exec_expr(ctx);
+
+	free(tkn.token);
 
 	ctx->linePos = ignore_space(ctx->tokenized_line, ctx->linePos);
 
@@ -1254,6 +1317,119 @@ int get_symbol(const unsigned char *s, int i, unsigned char *t)
 	}
 
 	*t = 0;
+	return i;
+}
+
+int get_token(const unsigned char *s, int i, TokenType* token)
+{
+	int done = 0;
+	token->type = TOKEN_TYPE_UNKNOWN;
+
+	while (s[i] == ' ')
+		i++;
+
+	if (s[i] > 127)
+	{
+		int ctr = 0;
+		token->type = TOKEN_TYPE_KEYWORD;
+		token->token[ctr++] = s[i++];
+		token->token[ctr] = 0;
+		return i;
+	}
+	if (s[i] == '+' || s[i] == '-' || s[i] == '-' || s[i] == '*' || s[i] == '/' || s[i] == '(' || s[i] == ')')
+	{
+		int ctr = 0;
+		token->type = TOKEN_TYPE_OPERATOR;
+		token->token[ctr++] = s[i++];
+		token->token[ctr] = 0;
+		return i;
+	}
+	if (s[i] == '=' || s[i] == '>' || s[i] == '<')
+	{
+		int ctr = 0;
+		token->type = TOKEN_TYPE_EQUALITY;
+		token->token[ctr++] = s[i++];
+
+		if ((s[i - 1] == '<' || s[i - 1] == '>') && s[i] == '=')
+			token->token[ctr++] = s[i++];
+		else
+			if (s[i - 1] == '<' && s[i] == '>')
+				token->token[ctr++] = s[i++];
+		token->token[ctr] = 0;
+		return i;
+	}
+	if (s[i] == '\"')
+	{
+		token->type = TOKEN_TYPE_STR_LIT;
+		int ctr = 0;
+		while (s[i] != 0)
+		{
+			token->token[ctr++] = s[i++];
+			if (s[i - 1] == '\"')
+				break;
+		}
+		token->token[ctr] = 0;
+		return i;
+	}
+	if (ISALPHA(s[i]))
+	{
+		int ctr = 0;
+		while (s[i] != 0 && ISALPHA(s[i]))
+		{
+			token->token[ctr++] = s[i++];
+		}
+
+		if (s[i] == '$')
+		{
+			token->type = TOKEN_TYPE_STR_VAR;
+			token->token[ctr++] = s[i++];
+		}
+		else
+		if (s[i] == '%')
+		{
+			token->type = TOKEN_TYPE_INT_VAR;
+			token->token[ctr++] = s[i++];
+		}
+		else
+		{
+			token->type = TOKEN_TYPE_FLT_VAR;
+			token->token[ctr++] = s[i++];
+		}
+		token->token[ctr] = 0;
+		return i;
+	}
+	if (ISDIGIT(s[i]) || s[i] == '.')
+	{
+		int ctr = 0;
+		token->type = TOKEN_TYPE_INT_LIT;
+
+		while (s[i] != 0 && (ISDIGIT(s[i]) || s[i] == '.'))
+		{
+			if (s[i] == '.')
+				token->type = TOKEN_TYPE_FLT_LIT;
+			token->token[ctr++] = s[i++];
+		}
+
+		token->token[ctr] = 0;
+		return i;
+	}
+	if (s[i] == ':' || s[i] == ';' || s[i] == ',')
+	{
+		int ctr = 0;
+		token->type = TOKEN_TYPE_DELIMITER;
+		token->token[ctr++] = s[i++];
+		token->token[ctr] = 0;
+		return i;
+	}
+	if (s[i] == 0)
+	{
+		int ctr = 0;
+		token->type = TOKEN_TYPE_EOL;
+		token->token[ctr++] = s[i++];
+		token->token[ctr] = 0;
+		return i;
+	}
+
 	return i;
 }
 

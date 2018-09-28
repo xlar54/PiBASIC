@@ -12,7 +12,7 @@ extern "C"
 
 #define VAR_NAMESZ 2       /* maximum variable name length */
 #define CMD_NAMESZ 10       /* limit for command words */
-#define CMD_COUNT 15        /* number of available commands */
+#define CMD_COUNT 18        /* number of available commands */
 #define DATA_STSZ 16        /* depth of calculation */
 #define CALL_STSZ 16        /* subroutine call depth */
 #define LINE_SZ 80          /* line width restriction */
@@ -56,6 +56,17 @@ struct Token {
 
 typedef Token TokenType;
 
+// for stack
+struct forstackitem {
+	unsigned char *var;
+	int linenumber;
+	int linepos;
+	int step;
+	double endval;
+};
+
+static struct forstackitem forstack[100];
+static int forstackidx = 0;
 
 #define DIGIT_LIST  '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
 #define DIGIT_LIST_COUNT 10
@@ -113,6 +124,7 @@ int exec_strexpr(struct Context *ctx, int* len);
 void exec_cmd_dim(struct Context *ctx);
 void exec_cmd_dir();
 void exec_cmd_end(struct Context *ctx);
+void exec_cmd_for(struct Context *ctx);
 void exec_cmd_gosub(struct Context *ctx);
 void exec_cmd_goto(struct Context *ctx);
 void exec_cmd_if(struct Context *ctx);
@@ -121,6 +133,7 @@ void exec_cmd_let(struct Context*);
 void exec_cmd_list();
 void exec_cmd_load(unsigned char *filename);
 void exec_cmd_new(struct Context *ctx);
+void exec_cmd_next(struct Context *ctx);
 void exec_cmd_print(struct Context *ctx);
 void exec_cmd_rem(struct Context *ctx);
 void exec_cmd_return(struct Context *ctx);

@@ -20,6 +20,8 @@ INPUT
 
 IF / THEN
 
+FOR / NEXT
+
 GOTO
 
 GOSUB

@@ -880,15 +880,15 @@ END GROUP
                 0x01f18dd0                exec_cmd_goto
                 0x01f18f04                exec_cmd_dim
                 0x01f18f70                exec_strexpr
-                0x01f194f8                exec_cmd_input
-                0x01f198e4                exec_cmd_let
-                0x01f19c3c                exec_line
-                0x01f19d4c                exec_cmd_print
-                0x01f19f78                get_token
-                0x01f1a328                exec_cmd_for
-                0x01f1a744                exec_cmd_if
-                0x01f1aa58                get_int
-                0x01f1aac0                get_float
+                0x01f194f8                exec_cmd_let
+                0x01f19850                exec_line
+                0x01f19960                exec_cmd_print
+                0x01f19b8c                get_token
+                0x01f19f3c                exec_cmd_for
+                0x01f1a358                exec_cmd_if
+                0x01f1a66c                get_int
+                0x01f1a6d4                get_float
+                0x01f1a780                exec_cmd_input
                 0x01f1ab6c                ignore_space
                 0x01f1abac                to_uppercase
                 0x01f1ac18                isemptyline
@@ -2266,7 +2266,7 @@ END GROUP
                 [!provide]                PROVIDE (_etext, .)
                 [!provide]                PROVIDE (etext, .)
 
-.rodata         0x01f38848     0x3818
+.rodata         0x01f38848     0x3830
  *(.rodata .rodata.* .gnu.linkonce.r.*)
  .rodata.str1.4
                 0x01f38848      0x114 src/exception.o
@@ -2303,192 +2303,192 @@ END GROUP
                 0x01f3a680      0x400 src/font_data.o
                 0x01f3a680                font8x8_basic
  .rodata.str1.4
-                0x01f3aa80      0x2a5 src/basic.o
-                                0x2b9 (size before relaxing)
- *fill*         0x01f3ad25        0x3 
+                0x01f3aa80      0x2b9 src/basic.o
+                                0x2cd (size before relaxing)
+ *fill*         0x01f3ad39        0x3 
  .rodata.str1.4
-                0x01f3ad28       0x66 src/expr.o
+                0x01f3ad3c       0x66 src/expr.o
                                  0x73 (size before relaxing)
- *fill*         0x01f3ad8e        0x2 
+ *fill*         0x01f3ada2        0x6 
  .rodata.FromUSPi
-                0x01f3ad90        0x5 uspi/libuspi.a(uspilibrary.o)
- *fill*         0x01f3ad95        0x3 
+                0x01f3ada8        0x5 uspi/libuspi.a(uspilibrary.o)
+ *fill*         0x01f3adad        0x3 
  .rodata.str1.4
-                0x01f3ad98       0x8e uspi/libuspi.a(uspilibrary.o)
- *fill*         0x01f3ae26        0x2 
+                0x01f3adb0       0x8e uspi/libuspi.a(uspilibrary.o)
+ *fill*         0x01f3ae3e        0x2 
  .rodata.FromDWHCI
-                0x01f3ae28        0x6 uspi/libuspi.a(dwhcidevice.o)
- *fill*         0x01f3ae2e        0x2 
+                0x01f3ae40        0x6 uspi/libuspi.a(dwhcidevice.o)
+ *fill*         0x01f3ae46        0x2 
  .rodata.str1.4
-                0x01f3ae30       0xc9 uspi/libuspi.a(dwhcidevice.o)
- *fill*         0x01f3aef9        0x7 
+                0x01f3ae48       0xc9 uspi/libuspi.a(dwhcidevice.o)
+ *fill*         0x01f3af11        0x7 
  .rodata.CSWTCH.34
-                0x01f3af00        0x3 uspi/libuspi.a(dwhcidevice.o)
- *fill*         0x01f3af03        0x5 
+                0x01f3af18        0x3 uspi/libuspi.a(dwhcidevice.o)
+ *fill*         0x01f3af1b        0x5 
  .rodata.FromDevice
-                0x01f3af08        0x7 uspi/libuspi.a(usbdevice.o)
- *fill*         0x01f3af0f        0x1 
+                0x01f3af20        0x7 uspi/libuspi.a(usbdevice.o)
+ *fill*         0x01f3af27        0x1 
  .rodata.str1.4
-                0x01f3af10      0x148 uspi/libuspi.a(usbdevice.o)
+                0x01f3af28      0x148 uspi/libuspi.a(usbdevice.o)
                                 0x150 (size before relaxing)
  .rodata.str1.4
-                0x01f3b058       0x1e uspi/libuspi.a(macaddress.o)
- *fill*         0x01f3b076        0x2 
+                0x01f3b070       0x1e uspi/libuspi.a(macaddress.o)
+ *fill*         0x01f3b08e        0x2 
  .rodata.str1.4
-                0x01f3b078       0x92 uspi/libuspi.a(smsc951x.o)
- *fill*         0x01f3b10a        0x6 
+                0x01f3b090       0x92 uspi/libuspi.a(smsc951x.o)
+ *fill*         0x01f3b122        0x6 
  .rodata.FromSMSC951x
-                0x01f3b110        0x9 uspi/libuspi.a(smsc951x.o)
- *fill*         0x01f3b119        0x3 
+                0x01f3b128        0x9 uspi/libuspi.a(smsc951x.o)
+ *fill*         0x01f3b131        0x3 
  .rodata.str1.4
-                0x01f3b11c       0x9c uspi/libuspi.a(lan7800.o)
+                0x01f3b134       0x9c uspi/libuspi.a(lan7800.o)
                                  0xea (size before relaxing)
  .rodata.FromLAN7800
-                0x01f3b1b8        0x8 uspi/libuspi.a(lan7800.o)
+                0x01f3b1d0        0x8 uspi/libuspi.a(lan7800.o)
  .rodata.str1.4
-                0x01f3b1c0        0x1 uspi/libuspi.a(string.o)
+                0x01f3b1d8        0x1 uspi/libuspi.a(string.o)
  .rodata.FromUmsd
-                0x01f3b1c0        0x5 uspi/libuspi.a(usbmassdevice.o)
- *fill*         0x01f3b1c5        0x3 
+                0x01f3b1d8        0x5 uspi/libuspi.a(usbmassdevice.o)
+ *fill*         0x01f3b1dd        0x3 
  .rodata.str1.4
-                0x01f3b1c8      0x1c4 uspi/libuspi.a(usbmassdevice.o)
+                0x01f3b1e0      0x1c4 uspi/libuspi.a(usbmassdevice.o)
                                 0x1e8 (size before relaxing)
  .rodata.str1.4
-                0x01f3b38c       0x1c uspi/libuspi.a(dwhciframeschednper.o)
+                0x01f3b3a4       0x1c uspi/libuspi.a(dwhciframeschednper.o)
  .rodata.str1.4
-                0x01f3b3a8       0x1c uspi/libuspi.a(dwhciframeschedper.o)
+                0x01f3b3c0       0x1c uspi/libuspi.a(dwhciframeschedper.o)
  .rodata.str1.4
-                0x01f3b3a8       0x3b uspi/libuspi.a(usbkeyboard.o)
+                0x01f3b3c0       0x3b uspi/libuspi.a(usbkeyboard.o)
                                  0x57 (size before relaxing)
- *fill*         0x01f3b3e3        0x5 
+ *fill*         0x01f3b3fb        0x5 
  .rodata.FromUSBKbd
-                0x01f3b3e8        0x7 uspi/libuspi.a(usbkeyboard.o)
- *fill*         0x01f3b3ef        0x1 
+                0x01f3b400        0x7 uspi/libuspi.a(usbkeyboard.o)
+ *fill*         0x01f3b407        0x1 
  .rodata.FromDWHCIRoot
-                0x01f3b3f0        0x7 uspi/libuspi.a(dwhcirootport.o)
- *fill*         0x01f3b3f7        0x1 
+                0x01f3b408        0x7 uspi/libuspi.a(dwhcirootport.o)
+ *fill*         0x01f3b40f        0x1 
  .rodata.str1.4
-                0x01f3b3f8       0x87 uspi/libuspi.a(dwhcirootport.o)
- *fill*         0x01f3b47f        0x1 
- .rodata.str1.4
-                0x01f3b480        0x9 uspi/libuspi.a(usbmouse.o)
-                                 0x59 (size before relaxing)
- *fill*         0x01f3b489        0x7 
- .rodata.FromUSBKbd
-                0x01f3b490        0x7 uspi/libuspi.a(usbmouse.o)
+                0x01f3b410       0x87 uspi/libuspi.a(dwhcirootport.o)
  *fill*         0x01f3b497        0x1 
+ .rodata.str1.4
+                0x01f3b498        0x9 uspi/libuspi.a(usbmouse.o)
+                                 0x59 (size before relaxing)
+ *fill*         0x01f3b4a1        0x7 
+ .rodata.FromUSBKbd
+                0x01f3b4a8        0x7 uspi/libuspi.a(usbmouse.o)
+ *fill*         0x01f3b4af        0x1 
  .rodata.leds.5753
-                0x01f3b498        0x5 uspi/libuspi.a(usbgamepad.o)
- *fill*         0x01f3b49d        0x3 
+                0x01f3b4b0        0x5 uspi/libuspi.a(usbgamepad.o)
+ *fill*         0x01f3b4b5        0x3 
  .rodata.FromUSBPad
-                0x01f3b4a0        0x7 uspi/libuspi.a(usbgamepad.o)
- *fill*         0x01f3b4a7        0x1 
+                0x01f3b4b8        0x7 uspi/libuspi.a(usbgamepad.o)
+ *fill*         0x01f3b4bf        0x1 
  .rodata.str1.4
-                0x01f3b4a8       0x21 uspi/libuspi.a(usbgamepad.o)
+                0x01f3b4c0       0x21 uspi/libuspi.a(usbgamepad.o)
                                  0x5f (size before relaxing)
- *fill*         0x01f3b4c9        0x3 
+ *fill*         0x01f3b4e1        0x3 
  .rodata.str1.4
-                0x01f3b4cc        0x8 uspi/libuspi.a(usbmidi.o)
+                0x01f3b4e4        0x8 uspi/libuspi.a(usbmidi.o)
                                  0x24 (size before relaxing)
- *fill*         0x01f3b4d4        0x4 
+ *fill*         0x01f3b4ec        0x4 
  .rodata.cin_to_length
-                0x01f3b4d8       0x40 uspi/libuspi.a(usbmidi.o)
+                0x01f3b4f0       0x40 uspi/libuspi.a(usbmidi.o)
  .rodata.FromMIDI
-                0x01f3b518        0x6 uspi/libuspi.a(usbmidi.o)
- *fill*         0x01f3b51e        0x2 
+                0x01f3b530        0x6 uspi/libuspi.a(usbmidi.o)
+ *fill*         0x01f3b536        0x2 
  .rodata.str1.4
-                0x01f3b520       0x2f uspi/libuspi.a(usbconfigparser.o)
- *fill*         0x01f3b54f        0x1 
+                0x01f3b538       0x2f uspi/libuspi.a(usbconfigparser.o)
+ *fill*         0x01f3b567        0x1 
  .rodata.str1.4
-                0x01f3b550       0x77 uspi/libuspi.a(usbdevicefactory.o)
- *fill*         0x01f3b5c7        0x1 
+                0x01f3b568       0x77 uspi/libuspi.a(usbdevicefactory.o)
+ *fill*         0x01f3b5df        0x1 
  .rodata.FromHub
-                0x01f3b5c8        0x7 uspi/libuspi.a(usbstandardhub.o)
- *fill*         0x01f3b5cf        0x1 
+                0x01f3b5e0        0x7 uspi/libuspi.a(usbstandardhub.o)
+ *fill*         0x01f3b5e7        0x1 
  .rodata.str1.4
-                0x01f3b5d0      0x1a8 uspi/libuspi.a(usbstandardhub.o)
+                0x01f3b5e8      0x1a8 uspi/libuspi.a(usbstandardhub.o)
                                 0x1e4 (size before relaxing)
  .rodata.s_DefaultMap
-                0x01f3b778      0x400 uspi/libuspi.a(keymap.o)
+                0x01f3b790      0x400 uspi/libuspi.a(keymap.o)
  .rodata.str1.4
-                0x01f3bb78       0xb6 uspi/libuspi.a(keymap.o)
+                0x01f3bb90       0xb6 uspi/libuspi.a(keymap.o)
                                  0xde (size before relaxing)
- *fill*         0x01f3bc2e        0x2 
+ *fill*         0x01f3bc46        0x2 
  .rodata.s_KeyStrings
-                0x01f3bc30       0xcc uspi/libuspi.a(keymap.o)
+                0x01f3bc48       0xcc uspi/libuspi.a(keymap.o)
  .rodata.fpi.5359
-                0x01f3bcfc       0x14 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-strtod.o)
+                0x01f3bd14       0x14 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-strtod.o)
  .rodata.str1.4
-                0x01f3bd10        0xf i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-strtod.o)
- *fill*         0x01f3bd1f        0x1 
+                0x01f3bd28        0xf i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-strtod.o)
+ *fill*         0x01f3bd37        0x1 
  .rodata.tinytens
-                0x01f3bd20       0x28 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-strtod.o)
+                0x01f3bd38       0x28 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-strtod.o)
  .rodata.fpinan.5395
-                0x01f3bd48       0x14 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-strtod.o)
+                0x01f3bd60       0x14 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-strtod.o)
  .rodata.blanks.7057
-                0x01f3bd5c       0x10 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-svfprintf.o)
+                0x01f3bd74       0x10 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-svfprintf.o)
  .rodata.str1.4
-                0x01f3bd6c       0x3f i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-svfprintf.o)
+                0x01f3bd84       0x3f i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-svfprintf.o)
                                  0x42 (size before relaxing)
- *fill*         0x01f3bdab        0x1 
+ *fill*         0x01f3bdc3        0x1 
  .rodata.zeroes.7058
-                0x01f3bdac       0x10 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-svfprintf.o)
+                0x01f3bdc4       0x10 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-svfprintf.o)
  .rodata.blanks.7072
-                0x01f3bdbc       0x10 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-vfprintf.o)
+                0x01f3bdd4       0x10 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-vfprintf.o)
  .rodata.str1.4
-                0x01f3bdcc       0x42 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-vfprintf.o)
+                0x01f3bde4       0x42 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-vfprintf.o)
  .rodata.zeroes.7073
-                0x01f3bdcc       0x10 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-vfprintf.o)
+                0x01f3bde4       0x10 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-vfprintf.o)
  .rodata.str1.4
-                0x01f3bddc       0x10 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-dtoa.o)
+                0x01f3bdf4       0x10 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-dtoa.o)
                                  0x12 (size before relaxing)
  .rodata.__hexdig
-                0x01f3bdec      0x100 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-gdtoa-gethex.o)
-                0x01f3bdec                __hexdig
+                0x01f3be04      0x100 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-gdtoa-gethex.o)
+                0x01f3be04                __hexdig
  .rodata.str1.4
-                0x01f3beec        0x2 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-impure.o)
- *fill*         0x01f3beee        0x2 
+                0x01f3bf04        0x2 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-impure.o)
+ *fill*         0x01f3bf06        0x2 
  .rodata._global_impure_ptr
-                0x01f3bef0        0x4 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-impure.o)
-                0x01f3bef0                _global_impure_ptr
+                0x01f3bf08        0x4 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-impure.o)
+                0x01f3bf08                _global_impure_ptr
  .rodata.str1.4
-                0x01f3bef4        0x8 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-locale.o)
+                0x01f3bf0c        0x8 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-locale.o)
                                  0x12 (size before relaxing)
  .rodata.p05.5398
-                0x01f3befc        0xc i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-mprec.o)
+                0x01f3bf14        0xc i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-mprec.o)
  .rodata.__mprec_tens
-                0x01f3bf08       0xc8 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-mprec.o)
-                0x01f3bf08                __mprec_tens
+                0x01f3bf20       0xc8 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-mprec.o)
+                0x01f3bf20                __mprec_tens
  .rodata.__mprec_bigtens
-                0x01f3bfd0       0x28 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-mprec.o)
-                0x01f3bfd0                __mprec_bigtens
+                0x01f3bfe8       0x28 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-mprec.o)
+                0x01f3bfe8                __mprec_bigtens
  .rodata.__mprec_tinytens
-                0x01f3bff8       0x28 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-mprec.o)
-                0x01f3bff8                __mprec_tinytens
+                0x01f3c010       0x28 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-mprec.o)
+                0x01f3c010                __mprec_tinytens
  .rodata.blanks.7001
-                0x01f3c020       0x10 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-svfiprintf.o)
+                0x01f3c038       0x10 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-svfiprintf.o)
  .rodata.str1.4
-                0x01f3c030       0x2f i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-svfiprintf.o)
+                0x01f3c048       0x2f i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-svfiprintf.o)
  .rodata.zeroes.7002
-                0x01f3c030       0x10 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-svfiprintf.o)
+                0x01f3c048       0x10 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-svfiprintf.o)
  .rodata.blanks.7015
-                0x01f3c040       0x10 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-vfiprintf.o)
+                0x01f3c058       0x10 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-vfiprintf.o)
  .rodata.str1.4
-                0x01f3c050       0x2f i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-vfiprintf.o)
+                0x01f3c068       0x2f i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-vfiprintf.o)
  .rodata.zeroes.7016
-                0x01f3c050       0x10 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-vfiprintf.o)
+                0x01f3c068       0x10 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-vfiprintf.o)
 
 .rodata1
  *(.rodata1)
 
-.ARM.extab      0x01f3c060        0x0
+.ARM.extab      0x01f3c078        0x0
  *(.ARM.extab* .gnu.linkonce.armextab.*)
- .ARM.extab     0x01f3c060        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/fpu\libgcc.a(_udivmoddi4.o)
+ .ARM.extab     0x01f3c078        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/fpu\libgcc.a(_udivmoddi4.o)
                 [!provide]                PROVIDE (__exidx_start, .)
 
-.ARM.exidx      0x01f3c060        0x8
+.ARM.exidx      0x01f3c078        0x8
  *(.ARM.exidx* .gnu.linkonce.armexidx.*)
- .ARM.exidx     0x01f3c060        0x8 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/fpu\libgcc.a(_udivmoddi4.o)
+ .ARM.exidx     0x01f3c078        0x8 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/fpu\libgcc.a(_udivmoddi4.o)
                 [!provide]                PROVIDE (__exidx_end, .)
 
 .eh_frame_hdr
@@ -2519,19 +2519,19 @@ END GROUP
  *(.tbss .tbss.* .gnu.linkonce.tb.*)
  *(.tcommon)
 
-.preinit_array  0x01f3c068        0x0
-                0x01f3c068                PROVIDE (__preinit_array_start, .)
+.preinit_array  0x01f3c080        0x0
+                0x01f3c080                PROVIDE (__preinit_array_start, .)
  *(.preinit_array)
-                0x01f3c068                PROVIDE (__preinit_array_end, .)
+                0x01f3c080                PROVIDE (__preinit_array_end, .)
 
-.init_array     0x01f3c068        0x4
-                0x01f3c068                PROVIDE (__init_array_start, .)
+.init_array     0x01f3c080        0x4
+                0x01f3c080                PROVIDE (__init_array_start, .)
  *(SORT(.init_array.*))
  *(.init_array)
- .init_array    0x01f3c068        0x4 src/main.o
-                0x01f3c06c                PROVIDE (__init_array_end, .)
+ .init_array    0x01f3c080        0x4 src/main.o
+                0x01f3c084                PROVIDE (__init_array_end, .)
 
-.fini_array     0x01f3c06c        0x0
+.fini_array     0x01f3c084        0x0
                 [!provide]                PROVIDE (__fini_array_start, .)
  *(SORT(.fini_array.*))
  *(.fini_array)
@@ -2561,199 +2561,199 @@ END GROUP
 .dynamic
  *(.dynamic)
 
-.got            0x01f3c06c        0x0
+.got            0x01f3c084        0x0
  *(.got.plt)
  *(.igot.plt)
- .igot.plt      0x01f3c06c        0x0 src/armc-start.o
+ .igot.plt      0x01f3c084        0x0 src/armc-start.o
  *(.got)
  *(.igot)
 
-.data           0x01f3c070      0x94c
-                0x01f3c070                __data_start = .
+.data           0x01f3c088      0x94c
+                0x01f3c088                __data_start = .
  *(.data .data.* .gnu.linkonce.d.*)
- .data          0x01f3c070        0x0 src/armc-start.o
- .data          0x01f3c070        0x0 src/armc-cstartup.o
- .data          0x01f3c070        0x0 src/armc-cstubs.o
- .data.environ  0x01f3c070        0x4 src/armc-cstubs.o
-                0x01f3c070                environ
- .data          0x01f3c074        0x0 src/armc-cppstubs.o
- .data          0x01f3c074        0x0 src/exception.o
- .data          0x01f3c074        0xc src/main.o
-                0x01f3c074                screenDepth
-                0x01f3c078                screenHeight
-                0x01f3c07c                screenWidth
- .data          0x01f3c080        0x0 src/rpi-aux.o
- .data          0x01f3c080        0x0 src/rpi-i2c.o
- .data          0x01f3c080        0x0 src/rpi-mailbox-interface.o
- .data          0x01f3c080        0x0 src/rpi-mailbox.o
- .data          0x01f3c080        0x0 src/rpi-gpio.o
+ .data          0x01f3c088        0x0 src/armc-start.o
+ .data          0x01f3c088        0x0 src/armc-cstartup.o
+ .data          0x01f3c088        0x0 src/armc-cstubs.o
+ .data.environ  0x01f3c088        0x4 src/armc-cstubs.o
+                0x01f3c088                environ
+ .data          0x01f3c08c        0x0 src/armc-cppstubs.o
+ .data          0x01f3c08c        0x0 src/exception.o
+ .data          0x01f3c08c        0xc src/main.o
+                0x01f3c08c                screenDepth
+                0x01f3c090                screenHeight
+                0x01f3c094                screenWidth
+ .data          0x01f3c098        0x0 src/rpi-aux.o
+ .data          0x01f3c098        0x0 src/rpi-i2c.o
+ .data          0x01f3c098        0x0 src/rpi-mailbox-interface.o
+ .data          0x01f3c098        0x0 src/rpi-mailbox.o
+ .data          0x01f3c098        0x0 src/rpi-gpio.o
  .data.RPI_GpioBase
-                0x01f3c080        0x4 src/rpi-gpio.o
-                0x01f3c080                RPI_GpioBase
- .data          0x01f3c084        0x0 src/rpi-interrupts.o
- .data          0x01f3c084        0x0 src/cache.o
- .data          0x01f3c084        0x0 src/ff.o
- .data          0x01f3c084        0x0 src/interrupt.o
- .data          0x01f3c084        0x0 src/Keyboard.o
- *fill*         0x01f3c084        0x4 
- .data          0x01f3c088       0x18 src/emmc.o
-                0x01f3c088                CEMMCDevice::sd_versions
- .data          0x01f3c0a0        0x0 src/diskio.o
- .data          0x01f3c0a0        0x0 src/vga.o
+                0x01f3c098        0x4 src/rpi-gpio.o
+                0x01f3c098                RPI_GpioBase
+ .data          0x01f3c09c        0x0 src/rpi-interrupts.o
+ .data          0x01f3c09c        0x0 src/cache.o
+ .data          0x01f3c09c        0x0 src/ff.o
+ .data          0x01f3c09c        0x0 src/interrupt.o
+ .data          0x01f3c09c        0x0 src/Keyboard.o
+ *fill*         0x01f3c09c        0x4 
+ .data          0x01f3c0a0       0x18 src/emmc.o
+                0x01f3c0a0                CEMMCDevice::sd_versions
+ .data          0x01f3c0b8        0x0 src/diskio.o
+ .data          0x01f3c0b8        0x0 src/vga.o
  .data.vga_current_bg_color
-                0x01f3c0a0        0x4 src/vga.o
+                0x01f3c0b8        0x4 src/vga.o
  .data.vga_current_fg_color
-                0x01f3c0a4        0x4 src/vga.o
- .data          0x01f3c0a8        0x0 src/terminal.o
- .data          0x01f3c0a8        0x0 src/timer.o
- .data          0x01f3c0a8        0x0 src/font_data.o
- .data          0x01f3c0a8        0x0 src/basic.o
- .data          0x01f3c0a8        0x0 src/linkedlist.o
- .data          0x01f3c0a8        0x4 src/expr.o
- .data          0x01f3c0ac        0x0 uspi/libuspi.a(uspilibrary.o)
- .data          0x01f3c0ac        0x0 uspi/libuspi.a(dwhcidevice.o)
- .data          0x01f3c0ac        0x0 uspi/libuspi.a(dwhciregister.o)
- .data          0x01f3c0ac        0x0 uspi/libuspi.a(dwhcixferstagedata.o)
- .data          0x01f3c0ac        0x0 uspi/libuspi.a(usbdevice.o)
+                0x01f3c0bc        0x4 src/vga.o
+ .data          0x01f3c0c0        0x0 src/terminal.o
+ .data          0x01f3c0c0        0x0 src/timer.o
+ .data          0x01f3c0c0        0x0 src/font_data.o
+ .data          0x01f3c0c0        0x0 src/basic.o
+ .data          0x01f3c0c0        0x0 src/linkedlist.o
+ .data          0x01f3c0c0        0x4 src/expr.o
+ .data          0x01f3c0c4        0x0 uspi/libuspi.a(uspilibrary.o)
+ .data          0x01f3c0c4        0x0 uspi/libuspi.a(dwhcidevice.o)
+ .data          0x01f3c0c4        0x0 uspi/libuspi.a(dwhciregister.o)
+ .data          0x01f3c0c4        0x0 uspi/libuspi.a(dwhcixferstagedata.o)
+ .data          0x01f3c0c4        0x0 uspi/libuspi.a(usbdevice.o)
  .data.s_ucNextAddress
-                0x01f3c0ac        0x1 uspi/libuspi.a(usbdevice.o)
- .data          0x01f3c0ad        0x0 uspi/libuspi.a(usbendpoint.o)
- .data          0x01f3c0ad        0x0 uspi/libuspi.a(usbrequest.o)
- .data          0x01f3c0ad        0x0 uspi/libuspi.a(devicenameservice.o)
- .data          0x01f3c0ad        0x0 uspi/libuspi.a(macaddress.o)
- .data          0x01f3c0ad        0x0 uspi/libuspi.a(smsc951x.o)
- .data          0x01f3c0ad        0x0 uspi/libuspi.a(lan7800.o)
- *fill*         0x01f3c0ad        0x3 
+                0x01f3c0c4        0x1 uspi/libuspi.a(usbdevice.o)
+ .data          0x01f3c0c5        0x0 uspi/libuspi.a(usbendpoint.o)
+ .data          0x01f3c0c5        0x0 uspi/libuspi.a(usbrequest.o)
+ .data          0x01f3c0c5        0x0 uspi/libuspi.a(devicenameservice.o)
+ .data          0x01f3c0c5        0x0 uspi/libuspi.a(macaddress.o)
+ .data          0x01f3c0c5        0x0 uspi/libuspi.a(smsc951x.o)
+ .data          0x01f3c0c5        0x0 uspi/libuspi.a(lan7800.o)
+ *fill*         0x01f3c0c5        0x3 
  .data.s_nDeviceNumber
-                0x01f3c0b0        0x4 uspi/libuspi.a(lan7800.o)
- .data          0x01f3c0b4        0x0 uspi/libuspi.a(string.o)
- .data          0x01f3c0b4        0x0 uspi/libuspi.a(util.o)
- .data          0x01f3c0b4        0x0 uspi/libuspi.a(usbmassdevice.o)
+                0x01f3c0c8        0x4 uspi/libuspi.a(lan7800.o)
+ .data          0x01f3c0cc        0x0 uspi/libuspi.a(string.o)
+ .data          0x01f3c0cc        0x0 uspi/libuspi.a(util.o)
+ .data          0x01f3c0cc        0x0 uspi/libuspi.a(usbmassdevice.o)
  .data.s_nDeviceNumber
-                0x01f3c0b4        0x4 uspi/libuspi.a(usbmassdevice.o)
- .data          0x01f3c0b8        0x0 uspi/libuspi.a(dwhciframeschednper.o)
- .data          0x01f3c0b8        0x0 uspi/libuspi.a(dwhciframeschedper.o)
- .data          0x01f3c0b8        0x0 uspi/libuspi.a(usbkeyboard.o)
+                0x01f3c0cc        0x4 uspi/libuspi.a(usbmassdevice.o)
+ .data          0x01f3c0d0        0x0 uspi/libuspi.a(dwhciframeschednper.o)
+ .data          0x01f3c0d0        0x0 uspi/libuspi.a(dwhciframeschedper.o)
+ .data          0x01f3c0d0        0x0 uspi/libuspi.a(usbkeyboard.o)
  .data.s_nDeviceNumber
-                0x01f3c0b8        0x4 uspi/libuspi.a(usbkeyboard.o)
- .data          0x01f3c0bc        0x0 uspi/libuspi.a(dwhcirootport.o)
- .data          0x01f3c0bc        0x0 uspi/libuspi.a(usbmouse.o)
+                0x01f3c0d0        0x4 uspi/libuspi.a(usbkeyboard.o)
+ .data          0x01f3c0d4        0x0 uspi/libuspi.a(dwhcirootport.o)
+ .data          0x01f3c0d4        0x0 uspi/libuspi.a(usbmouse.o)
  .data.s_nDeviceNumber
-                0x01f3c0bc        0x4 uspi/libuspi.a(usbmouse.o)
- .data          0x01f3c0c0        0x0 uspi/libuspi.a(dwhciframeschednsplit.o)
- .data          0x01f3c0c0        0x0 uspi/libuspi.a(usbgamepad.o)
+                0x01f3c0d4        0x4 uspi/libuspi.a(usbmouse.o)
+ .data          0x01f3c0d8        0x0 uspi/libuspi.a(dwhciframeschednsplit.o)
+ .data          0x01f3c0d8        0x0 uspi/libuspi.a(usbgamepad.o)
  .data.s_nDeviceNumber
-                0x01f3c0c0        0x4 uspi/libuspi.a(usbgamepad.o)
- *fill*         0x01f3c0c4        0x4 
+                0x01f3c0d8        0x4 uspi/libuspi.a(usbgamepad.o)
+ *fill*         0x01f3c0dc        0x4 
  .data.writeBuf.5752
-                0x01f3c0c8       0x30 uspi/libuspi.a(usbgamepad.o)
- .data          0x01f3c0f8        0x0 uspi/libuspi.a(synchronize.o)
- .data          0x01f3c0f8        0x0 uspi/libuspi.a(usbstring.o)
- .data          0x01f3c0f8        0x0 uspi/libuspi.a(usbmidi.o)
+                0x01f3c0e0       0x30 uspi/libuspi.a(usbgamepad.o)
+ .data          0x01f3c110        0x0 uspi/libuspi.a(synchronize.o)
+ .data          0x01f3c110        0x0 uspi/libuspi.a(usbstring.o)
+ .data          0x01f3c110        0x0 uspi/libuspi.a(usbmidi.o)
  .data.s_nDeviceNumber
-                0x01f3c0f8        0x4 uspi/libuspi.a(usbmidi.o)
- .data          0x01f3c0fc        0x0 uspi/libuspi.a(usbconfigparser.o)
- .data          0x01f3c0fc        0x0 uspi/libuspi.a(usbdevicefactory.o)
- .data          0x01f3c0fc        0x0 uspi/libuspi.a(usbstandardhub.o)
- .data          0x01f3c0fc        0x0 uspi/libuspi.a(keymap.o)
- .data          0x01f3c0fc        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/fpu\libgcc.a(_aeabi_uldivmod.o)
- .data          0x01f3c0fc        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/fpu\libgcc.a(_udivmoddi4.o)
- .data          0x01f3c0fc        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/fpu\libgcc.a(_dvmd_tls.o)
- .data          0x01f3c0fc        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/fpu\libgcc.a(_clzdi2.o)
- .data          0x01f3c0fc        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/fpu\libgcc.a(_clzsi2.o)
- .data          0x01f3c0fc        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-abs.o)
- .data          0x01f3c0fc        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-aeabi_atexit.o)
- .data          0x01f3c0fc        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-atof.o)
- .data          0x01f3c0fc        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-cxa_atexit.o)
- .data          0x01f3c0fc        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-init.o)
- .data          0x01f3c0fc        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-malloc.o)
- .data          0x01f3c0fc        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-mallocr.o)
+                0x01f3c110        0x4 uspi/libuspi.a(usbmidi.o)
+ .data          0x01f3c114        0x0 uspi/libuspi.a(usbconfigparser.o)
+ .data          0x01f3c114        0x0 uspi/libuspi.a(usbdevicefactory.o)
+ .data          0x01f3c114        0x0 uspi/libuspi.a(usbstandardhub.o)
+ .data          0x01f3c114        0x0 uspi/libuspi.a(keymap.o)
+ .data          0x01f3c114        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/fpu\libgcc.a(_aeabi_uldivmod.o)
+ .data          0x01f3c114        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/fpu\libgcc.a(_udivmoddi4.o)
+ .data          0x01f3c114        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/fpu\libgcc.a(_dvmd_tls.o)
+ .data          0x01f3c114        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/fpu\libgcc.a(_clzdi2.o)
+ .data          0x01f3c114        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/fpu\libgcc.a(_clzsi2.o)
+ .data          0x01f3c114        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-abs.o)
+ .data          0x01f3c114        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-aeabi_atexit.o)
+ .data          0x01f3c114        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-atof.o)
+ .data          0x01f3c114        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-cxa_atexit.o)
+ .data          0x01f3c114        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-init.o)
+ .data          0x01f3c114        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-malloc.o)
+ .data          0x01f3c114        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-mallocr.o)
  .data.__malloc_av_
-                0x01f3c0fc      0x408 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-mallocr.o)
-                0x01f3c0fc                __malloc_av_
+                0x01f3c114      0x408 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-mallocr.o)
+                0x01f3c114                __malloc_av_
  .data.__malloc_trim_threshold
-                0x01f3c504        0x4 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-mallocr.o)
-                0x01f3c504                __malloc_trim_threshold
+                0x01f3c51c        0x4 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-mallocr.o)
+                0x01f3c51c                __malloc_trim_threshold
  .data.__malloc_sbrk_base
-                0x01f3c508        0x4 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-mallocr.o)
-                0x01f3c508                __malloc_sbrk_base
- .data          0x01f3c50c        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-memcpy-stub.o)
- .data          0x01f3c50c        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-memset.o)
- .data          0x01f3c50c        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-mlock.o)
- .data          0x01f3c50c        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-printf.o)
- .data          0x01f3c50c        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-reent.o)
- .data          0x01f3c50c        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-sbrkr.o)
- .data          0x01f3c50c        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-snprintf.o)
- .data          0x01f3c50c        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-strcat.o)
- .data          0x01f3c50c        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-strcmp.o)
- .data          0x01f3c50c        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-strcpy.o)
- .data          0x01f3c50c        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-strlen-stub.o)
- .data          0x01f3c50c        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-strncmp.o)
- .data          0x01f3c50c        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-strrchr.o)
- .data          0x01f3c50c        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-strtod.o)
- .data          0x01f3c50c        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-svfprintf.o)
- .data          0x01f3c50c        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-vfprintf.o)
- .data          0x01f3c50c        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-vprintf.o)
- .data          0x01f3c50c        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-wsetup.o)
- .data          0x01f3c50c        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-__atexit.o)
- .data          0x01f3c50c        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-dtoa.o)
- .data          0x01f3c50c        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-fflush.o)
- .data          0x01f3c50c        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-findfp.o)
- .data          0x01f3c50c        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-freer.o)
- .data          0x01f3c50c        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-fwalk.o)
- .data          0x01f3c50c        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-gdtoa-gethex.o)
- .data          0x01f3c50c        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-gdtoa-hexnan.o)
- .data          0x01f3c50c        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-impure.o)
- *fill*         0x01f3c50c        0x4 
+                0x01f3c520        0x4 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-mallocr.o)
+                0x01f3c520                __malloc_sbrk_base
+ .data          0x01f3c524        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-memcpy-stub.o)
+ .data          0x01f3c524        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-memset.o)
+ .data          0x01f3c524        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-mlock.o)
+ .data          0x01f3c524        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-printf.o)
+ .data          0x01f3c524        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-reent.o)
+ .data          0x01f3c524        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-sbrkr.o)
+ .data          0x01f3c524        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-snprintf.o)
+ .data          0x01f3c524        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-strcat.o)
+ .data          0x01f3c524        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-strcmp.o)
+ .data          0x01f3c524        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-strcpy.o)
+ .data          0x01f3c524        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-strlen-stub.o)
+ .data          0x01f3c524        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-strncmp.o)
+ .data          0x01f3c524        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-strrchr.o)
+ .data          0x01f3c524        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-strtod.o)
+ .data          0x01f3c524        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-svfprintf.o)
+ .data          0x01f3c524        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-vfprintf.o)
+ .data          0x01f3c524        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-vprintf.o)
+ .data          0x01f3c524        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-wsetup.o)
+ .data          0x01f3c524        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-__atexit.o)
+ .data          0x01f3c524        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-dtoa.o)
+ .data          0x01f3c524        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-fflush.o)
+ .data          0x01f3c524        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-findfp.o)
+ .data          0x01f3c524        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-freer.o)
+ .data          0x01f3c524        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-fwalk.o)
+ .data          0x01f3c524        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-gdtoa-gethex.o)
+ .data          0x01f3c524        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-gdtoa-hexnan.o)
+ .data          0x01f3c524        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-impure.o)
+ *fill*         0x01f3c524        0x4 
  .data.impure_data
-                0x01f3c510      0x428 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-impure.o)
+                0x01f3c528      0x428 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-impure.o)
  .data._impure_ptr
-                0x01f3c938        0x4 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-impure.o)
-                0x01f3c938                _impure_ptr
- .data          0x01f3c93c        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-locale.o)
+                0x01f3c950        0x4 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-impure.o)
+                0x01f3c950                _impure_ptr
+ .data          0x01f3c954        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-locale.o)
  .data.lc_message_charset
-                0x01f3c93c       0x20 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-locale.o)
- .data.lconv    0x01f3c95c       0x38 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-locale.o)
+                0x01f3c954       0x20 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-locale.o)
+ .data.lconv    0x01f3c974       0x38 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-locale.o)
  .data.lc_ctype_charset
-                0x01f3c994       0x20 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-locale.o)
+                0x01f3c9ac       0x20 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-locale.o)
  .data.__mb_cur_max
-                0x01f3c9b4        0x4 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-locale.o)
-                0x01f3c9b4                __mb_cur_max
- .data          0x01f3c9b8        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-makebuf.o)
- .data          0x01f3c9b8        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-memchr-stub.o)
- .data          0x01f3c9b8        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-mprec.o)
- .data          0x01f3c9b8        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-sf_nan.o)
- .data          0x01f3c9b8        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-stdio.o)
- .data          0x01f3c9b8        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-strchr.o)
- .data          0x01f3c9b8        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-svfiprintf.o)
- .data          0x01f3c9b8        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-vfiprintf.o)
- .data          0x01f3c9b8        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-writer.o)
- .data          0x01f3c9b8        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-callocr.o)
- .data          0x01f3c9b8        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-closer.o)
- .data          0x01f3c9b8        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-fclose.o)
- .data          0x01f3c9b8        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-fputwc.o)
- .data          0x01f3c9b8        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-fstatr.o)
- .data          0x01f3c9b8        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-fvwrite.o)
- .data          0x01f3c9b8        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-isattyr.o)
- .data          0x01f3c9b8        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-lseekr.o)
- .data          0x01f3c9b8        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-memmove.o)
- .data          0x01f3c9b8        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-readr.o)
- .data          0x01f3c9b8        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-reallocr.o)
- .data          0x01f3c9b8        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-wbuf.o)
- .data          0x01f3c9b8        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-wcrtomb.o)
- .data          0x01f3c9b8        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-wctomb_r.o)
+                0x01f3c9cc        0x4 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-locale.o)
+                0x01f3c9cc                __mb_cur_max
+ .data          0x01f3c9d0        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-makebuf.o)
+ .data          0x01f3c9d0        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-memchr-stub.o)
+ .data          0x01f3c9d0        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-mprec.o)
+ .data          0x01f3c9d0        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-sf_nan.o)
+ .data          0x01f3c9d0        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-stdio.o)
+ .data          0x01f3c9d0        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-strchr.o)
+ .data          0x01f3c9d0        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-svfiprintf.o)
+ .data          0x01f3c9d0        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-vfiprintf.o)
+ .data          0x01f3c9d0        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-writer.o)
+ .data          0x01f3c9d0        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-callocr.o)
+ .data          0x01f3c9d0        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-closer.o)
+ .data          0x01f3c9d0        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-fclose.o)
+ .data          0x01f3c9d0        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-fputwc.o)
+ .data          0x01f3c9d0        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-fstatr.o)
+ .data          0x01f3c9d0        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-fvwrite.o)
+ .data          0x01f3c9d0        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-isattyr.o)
+ .data          0x01f3c9d0        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-lseekr.o)
+ .data          0x01f3c9d0        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-memmove.o)
+ .data          0x01f3c9d0        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-readr.o)
+ .data          0x01f3c9d0        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-reallocr.o)
+ .data          0x01f3c9d0        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-wbuf.o)
+ .data          0x01f3c9d0        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-wcrtomb.o)
+ .data          0x01f3c9d0        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-wctomb_r.o)
  .data.__wctomb
-                0x01f3c9b8        0x4 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-wctomb_r.o)
-                0x01f3c9b8                __wctomb
- .data          0x01f3c9bc        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/fpu\libgcc.a(_udivsi3.o)
- .data          0x01f3c9bc        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/fpu\libgcc.a(_divsi3.o)
+                0x01f3c9d0        0x4 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/fpu\libc.a(lib_a-wctomb_r.o)
+                0x01f3c9d0                __wctomb
+ .data          0x01f3c9d4        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/fpu\libgcc.a(_udivsi3.o)
+ .data          0x01f3c9d4        0x0 i:/development/arm/gnu tools arm embedded/5.4 2016q2/bin/../lib/gcc/arm-none-eabi/5.4.1/fpu\libgcc.a(_divsi3.o)
 
 .data1
  *(.data1)
-                0x01f3c9bc                _edata = .
+                0x01f3c9d4                _edata = .
                 [!provide]                PROVIDE (edata, .)
-                0x01f3c9bc                __bss_start = .
-                0x01f3c9bc                __bss_start__ = .
+                0x01f3c9d4                __bss_start = .
+                0x01f3c9d4                __bss_start__ = .
 
 .bss            0x01f40000    0x14004
  *(.dynbss)

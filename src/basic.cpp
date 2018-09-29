@@ -870,6 +870,7 @@ void exec_cmd_input(struct Context *ctx)
 	unsigned char buffer[160] = { 0 };
 	int bufferctr = 0;
 
+again:
 	term_printf("? ");
 	
 	while (true)
@@ -908,6 +909,19 @@ void exec_cmd_input(struct Context *ctx)
 	}
 	else
 	{
+		bool numeric = true;
+		int x = 0;
+		for (x = 0; x < length(buffer); x++)
+			if (!ISDIGIT(buffer[x]) && buffer[x] != '.')
+				numeric = false;
+
+		if (numeric == false)
+		{
+			printf("?Redo from start\n");
+			bufferctr = 0;
+			goto again;
+		}
+		
 		get_float(buffer, 0, &value);
 		var_add_update_float(ctx, name, value);
 	}

@@ -12,7 +12,7 @@ extern "C"
 #include "expr.h"
 }
 
-#define _BUILD_NUM_ "0.0.7"
+#define _BUILD_NUM_ "0.0.8"
 
 void basic_main()
 {
@@ -313,18 +313,45 @@ int exec_strexpr(struct Context *ctx, int* len)
 
 	exp = (unsigned char*)malloc(sizeof(unsigned char*) * 255);
 
+	lpos = ignore_space(ctx->tokenized_line, ctx->linePos);
+
 	while (true)
 	{
-		if (quoteMode == 0)
+		if (ctx->tokenized_line[lpos] == '\"' && quoteMode == 0)
 		{
-			lpos = ignore_space(ctx->tokenized_line, lpos);
-			if (lpos == -1 || ensure_token(ctx->tokenized_line[lpos], 3, ':', ',', ';'))
-				break;
+			quoteMode = 1;
+			lpos++;
 		}
+		else
+		if (quoteMode == 1)
+		{
+			if (ctx->tokenized_line[lpos] == '\"')
+			{
+				quoteMode = 0;
+				lpos++;
 
-		// check if variable
+				lpos = ignore_space(ctx->tokenized_line, lpos);
+
+				if (lpos == -1 || ensure_token(ctx->tokenized_line[lpos], 7, ':', ',', ';','=','<', '>', TOKEN_THEN))
+					break;
+
+				// expect plus sign
+				if (ensure_token(ctx->tokenized_line[lpos], 1, '+'))
+					lpos++;
+				else
+				{
+					ctx->error = ERR_UNEXP;
+					ctx->error_line = ctx->line;
+					break;
+				}
+			}
+			else
+				exp[ctr++] = ctx->tokenized_line[lpos++];
+		}
+		else 
 		if (ISALPHA(ctx->tokenized_line[lpos]))
 		{
+			// check if variable
 			lpos = get_symbol(ctx->tokenized_line, lpos, name);
 
 			for (int j = 0; j < ctx->var_count; j++)
@@ -337,15 +364,15 @@ int exec_strexpr(struct Context *ctx, int* len)
 						break;
 					}
 					else
-					if (ctx->vars[j].type == VAR_STRING)
-					{
-						unsigned char *value = (unsigned char*)ctx->vars[j].location;
-						exp[ctr] = 0;
-						strcat((char*)exp, (char*)value);
-						ctr = strlen((const char*)exp);
-						varFound = 1;
-						break;
-					}
+						if (ctx->vars[j].type == VAR_STRING)
+						{
+							unsigned char *value = (unsigned char*)ctx->vars[j].location;
+							exp[ctr] = 0;
+							strcat((char*)exp, (char*)value);
+							ctr = strlen((const char*)exp);
+							varFound = 1;
+							break;
+						}
 				}
 			}
 
@@ -376,44 +403,10 @@ int exec_strexpr(struct Context *ctx, int* len)
 		}
 		else
 		{
-			if (ctx->tokenized_line[lpos] == '\"' && quoteMode == 0)
-			{
-				quoteMode = 1;
-				lpos++;
-			}
-			else
-			if (quoteMode == 1)
-			{
-				if (ctx->tokenized_line[lpos] == '\"')
-				{
-					quoteMode = 0;
-					lpos++;
-
-					lpos = ignore_space(ctx->tokenized_line, lpos);
-
-					if (lpos == -1 || ensure_token(ctx->tokenized_line[lpos], 7, ':', ',', ';','=','<', '>', TOKEN_THEN))
-						break;
-
-					// expect plus sign
-					if (ensure_token(ctx->tokenized_line[lpos], 1, '+'))
-						lpos++;
-					else
-					{
-						ctx->error = ERR_UNEXP;
-						ctx->error_line = ctx->line;
-						break;
-					}
-				}
-				else
-					exp[ctr++] = ctx->tokenized_line[lpos++];
-			}
-			else
-			{
-				ctx->error = ERR_UNEXP;
-				ctx->error_line = ctx->line;
-				break;
-			}
-		}	
+			ctx->error = ERR_UNEXP;
+			ctx->error_line = ctx->line;
+			break;
+		}
 	}
 
 	exp[ctr] = 0;
@@ -917,7 +910,7 @@ again:
 
 		if (numeric == false)
 		{
-			printf("?Redo from start\n");
+			term_printf("?Redo from start\n");
 			bufferctr = 0;
 			goto again;
 		}

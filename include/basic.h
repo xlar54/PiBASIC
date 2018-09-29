@@ -27,6 +27,7 @@ extern "C"
 #define ERR_DIV0			-5
 #define ERR_RTRN_WO_GSB		-6
 #define ERR_TYPE_MISMATCH	-7
+#define ERR_NEXT_WO_FOR		-8
 
 #define VAR_NONE	0
 #define VAR_INT		1
@@ -47,7 +48,8 @@ extern "C"
 #define TOKEN_TYPE_FLT_FUNC		11
 #define TOKEN_TYPE_STR_FUNC		12
 #define TOKEN_TYPE_DELIMITER	13
-#define TOKEN_TYPE_EOL			14
+#define TOKEN_TYPE_EOS			14
+#define TOKEN_TYPE_EOL			15
 
 struct Token {
 	int type;

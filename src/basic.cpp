@@ -12,7 +12,7 @@ extern "C"
 #include "expr.h"
 }
 
-#define _BUILD_NUM_ "0.0.5"
+#define _BUILD_NUM_ "0.0.7"
 
 void basic_main()
 {
@@ -160,6 +160,8 @@ void exec_program(struct Context* ctx)
 	ctx->error_line = 0;
 	ctx->error = ERR_NONE;
 
+	forstackidx = 0;
+	
 	var_clear_all(ctx);
 
 	while (ctx->running && currentNode != NULL)
@@ -205,6 +207,9 @@ void exec_program(struct Context* ctx)
 					break;
 				case ERR_TYPE_MISMATCH:
 					term_printf("\n?Type mismatch error");
+					break;
+				case ERR_NEXT_WO_FOR:
+					term_printf("\n?NEXT without FOR error");
 					break;
 				default:
 					term_printf("\n?Unspecified error");
@@ -277,11 +282,17 @@ void exec_line(struct Context *ctx)
 
 		if (ctx->linePos != -1)
 		{
+			if (ctx->tokenized_line[ctx->linePos] == ':')
+				ctx->linePos++;
+		}
+
+		/*if (ctx->linePos != -1)
+		{
 			if (ctx->tokenized_line[ctx->linePos] != TOKEN_THEN)
 				ctx->linePos = next_statement(ctx);
 			else
 				ctx->linePos++;
-		}
+		}*/
 	}
 }
 
@@ -580,7 +591,6 @@ void exec_cmd_for(struct Context *ctx)
 	double stepval = 0;
 	TokenType tkn;
 	unsigned char varname[5] = { 0 };
-	
 
 	tkn.token = (unsigned char*)malloc(sizeof(unsigned char) * 160);
 
@@ -605,24 +615,42 @@ void exec_cmd_for(struct Context *ctx)
 			ctx->linePos = get_token(ctx->tokenized_line, ctx->linePos, &tkn);
 			if (tkn.type == TOKEN_TYPE_KEYWORD && tkn.token[0] == TOKEN_TO)
 			{
-				//ctx->linePos = ignore_space(ctx->tokenized_line, ++ctx->linePos);
 				ctx->linePos = exec_expr(ctx);
-
 				endval = ctx->dstack[ctx->dsptr--];
 
 				ctx->linePos = ignore_space(ctx->tokenized_line, ctx->linePos);
 
 				if (ctx->linePos == -1 || ctx->tokenized_line[ctx->linePos] == ':')
 				{
+					if (ctx->tokenized_line[ctx->linePos] == ':')
+						ctx->linePos++;
+
 					struct forstackitem fsi;
 					fsi.var = (unsigned char *)malloc(sizeof(unsigned char)* length(varname) + 1);
 					strcpy((char *)fsi.var, (char *)varname);
 					fsi.endval = endval;
 					fsi.linenumber = ctx->line;
-					fsi.linepos = ctx->linePos-1;
+					fsi.linepos = ctx->linePos;
 					fsi.step = 1;
 
-					forstack[forstackidx++] = fsi;
+					// check if this is already on the for stack. If so, update the values.
+					bool found = false;
+					for (int x = 0; x < forstackidx; x++)
+					{
+						if (strcmp((char*)forstack[x].var, (char*)fsi.var) == 0)
+						{
+							found = true;
+							forstack[x].endval = fsi.endval;
+							forstack[x].linenumber = fsi.linenumber;
+							forstack[x].linepos = fsi.linepos;
+							forstack[x].step = fsi.step;
+							break;
+						}
+					}
+
+					// if not on for stack, add it
+					if (found == false)
+						forstack[forstackidx++] = fsi;
 				}
 				else
 				{
@@ -1090,67 +1118,106 @@ void exec_cmd_next(struct Context *ctx)
 	unsigned char varname[10];
 	bool found = false;
 
+	if (forstackidx == 0)
+	{
+		// next without for
+		ctx->error = ERR_NEXT_WO_FOR;
+		ctx->error_line = ctx->line;
+		return;
+	}
+
 	tkn.token = (unsigned char*)malloc(sizeof(unsigned char) * 160);
 
 	ctx->linePos = get_token(ctx->tokenized_line, ctx->linePos, &tkn);
-	if (tkn.type == TOKEN_TYPE_FLT_VAR || tkn.type == TOKEN_TYPE_INT_VAR)
+	if (tkn.type == TOKEN_TYPE_FLT_VAR || tkn.type == TOKEN_TYPE_INT_VAR || tkn.type == TOKEN_TYPE_EOL || tkn.type == TOKEN_TYPE_EOS)
 	{
-		ctx->linePos = ctx->linePos - length(tkn.token);
-		ctx->linePos = exec_expr(ctx);
-		currentvalue = ctx->dstack[ctx->dsptr--];
+		if (tkn.type == TOKEN_TYPE_FLT_VAR || tkn.type == TOKEN_TYPE_INT_VAR)
+		{
+			// code is NEXT with a variable, so we get the value of the variable (doesnt matter if it doesnt exist yet)
+			for (int x = 0; x < ctx->var_count; x++)
+			{
+				if (strcmp((char *)tkn.token, (char*)ctx->vars[x].name) == 0)
+				{
+					currentvalue = *((float*)ctx->vars[x].location);
+					break;
+				}
+			}
+		}
+		else
+		{
+			// backup if not EOL
+			if(tkn.type == TOKEN_TYPE_EOS)	ctx->linePos--;
+
+			// code is NEXT without a variable, so we use the topmost variable on for stack
+			strcpy((char *)tkn.token, (char*)forstack[forstackidx-1].var);
+			for (int x = 0; x < ctx->var_count; x++)
+			{
+				if (strcmp((char *)tkn.token, (char*)ctx->vars[x].name) == 0)
+				{
+					currentvalue = *((float*)ctx->vars[x].location);
+					break;
+				}
+			}
+		}
 
 		for (int x = 0; x < forstackidx; x++)
 		{
+			// find the NEXT variable
 			if (strcmp((char *)forstack[x].var, (char *)tkn.token) == 0)
 			{
+				forstackidx = x+1;
 				found = true;
-				var_add_update_float(ctx, tkn.token, currentvalue + forstack[x].step);
 
+				// if we have not exceeded the value
 				if (currentvalue + forstack[x].step <= forstack[x].endval)
 				{
-					// Get previous line pos and line number
-					ctx->linePos = forstack[x].linepos;
-					ctx->line = ll_find(forstack[x].linenumber)->linenum;
-					ctx->original_line = ll_find(forstack[x].linenumber)->data;
+					// increment variable based on step value
+					var_add_update_float(ctx, tkn.token, currentvalue + forstack[x].step);
 
-					// retokenize the line
+					// get and retokenize the line
+					ctx->original_line = ll_find(forstack[x].linenumber)->data;
+					free(ctx->tokenized_line);
 					unsigned char* tokenized_line = (unsigned char*)malloc(sizeof(unsigned char) * 160);
 					tokenize(ctx, ctx->original_line, tokenized_line);
-
 					ctx->tokenized_line = tokenized_line;
-					ctx->jmpline = ctx->line;
-					break;
+
+					// reset the line position to iterate again
+					ctx->jmpline = ll_find(forstack[x].linenumber)->linenum;
+					ctx->linePos = forstack[x].linepos;
+					ctx->line = ll_find(forstack[x].linenumber)->linenum;
 				}
 				else
 				{
+					// if end of for loop, pop the for stack
 					forstackidx--;
 
-					ctx->linePos = ignore_space(ctx->tokenized_line, ctx->linePos);
+					ctx->linePos = get_token(ctx->tokenized_line, ctx->linePos, &tkn);
 
-					if (ctx->linePos != -1 && ctx->tokenized_line[ctx->linePos] != ':')
+					if (tkn.type != TOKEN_TYPE_EOL && tkn.type != TOKEN_TYPE_EOS)
 					{
 						ctx->error = ERR_UNEXP;
 						ctx->error_line = ctx->line;
-						break;
 					}
 				}
 
+				break;
 			}
 		}
 
 		if (found == false)
 		{
 			// next without for
-			ctx->error = ERR_UNEXP;
+			ctx->error = ERR_NEXT_WO_FOR;
 			ctx->error_line = ctx->line;
 		}
-
 	}
 	else
 	{
 		ctx->error = ERR_UNEXP;
 		ctx->error_line = ctx->line;
 	}
+
+	free(tkn.token);
 }
 
 void exec_cmd_print(struct Context *ctx)
@@ -1476,6 +1543,12 @@ int get_token(const unsigned char *s, int i, TokenType* token)
 	int done = 0;
 	token->type = TOKEN_TYPE_UNKNOWN;
 
+	if (i == -1 || i > length(s))
+	{
+		token->type = TOKEN_TYPE_EOL;
+		return i;
+	}
+
 	while (s[i] == ' ')
 		i++;
 
@@ -1563,7 +1636,7 @@ int get_token(const unsigned char *s, int i, TokenType* token)
 		token->token[ctr] = 0;
 		return i;
 	}
-	if (s[i] == ':' || s[i] == ';' || s[i] == ',')
+	if (s[i] == ';' || s[i] == ',')
 	{
 		int ctr = 0;
 		token->type = TOKEN_TYPE_DELIMITER;
@@ -1571,12 +1644,18 @@ int get_token(const unsigned char *s, int i, TokenType* token)
 		token->token[ctr] = 0;
 		return i;
 	}
-	if (s[i] == 0)
+	if (s[i] == ':')
 	{
 		int ctr = 0;
-		token->type = TOKEN_TYPE_EOL;
+		token->type = TOKEN_TYPE_EOS;
 		token->token[ctr++] = s[i++];
 		token->token[ctr] = 0;
+		return i;
+	}
+	if (s[i] == 0)
+	{
+		token->type = TOKEN_TYPE_EOL;
+		i = -1;
 		return i;
 	}
 

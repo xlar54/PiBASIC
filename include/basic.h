@@ -12,7 +12,7 @@ extern "C"
 
 #define VAR_NAMESZ 2       /* maximum variable name length */
 #define CMD_NAMESZ 10       /* limit for command words */
-#define CMD_COUNT 18        /* number of available commands */
+#define CMD_COUNT 19        /* number of available commands */
 #define DATA_STSZ 16        /* depth of calculation */
 #define CALL_STSZ 16        /* subroutine call depth */
 #define LINE_SZ 80          /* line width restriction */

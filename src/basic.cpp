@@ -140,6 +140,7 @@ void exec_init(struct Context *ctx)
 	BINDCMD(&ctx->cmds[15], "FOR", exec_cmd_for, TOKEN_FOR);
 	BINDCMD(&ctx->cmds[16], "TO", exec_cmd_then, TOKEN_TO);
 	BINDCMD(&ctx->cmds[17], "NEXT", exec_cmd_next, TOKEN_NEXT);
+	BINDCMD(&ctx->cmds[18], "STEP", exec_cmd_then, TOKEN_STEP);
 }
 
 void exec_program(struct Context* ctx)
@@ -605,13 +606,22 @@ void exec_cmd_for(struct Context *ctx)
 			else
 				var_add_update_float(ctx, varname, startval);
 
-			ctx->linePos = get_token(ctx->tokenized_line, ctx->linePos, &tkn);
-			if (tkn.type == TOKEN_TYPE_KEYWORD && tkn.token[0] == TOKEN_TO)
+			ctx->linePos = ignore_space(ctx->tokenized_line, ctx->linePos);
+			if (ctx->tokenized_line[ctx->linePos] == TOKEN_TO)
 			{
+				ctx->linePos++;
 				ctx->linePos = exec_expr(ctx);
 				endval = ctx->dstack[ctx->dsptr--];
 
+				int step = 1;
 				ctx->linePos = ignore_space(ctx->tokenized_line, ctx->linePos);
+				if (ctx->tokenized_line[ctx->linePos] == TOKEN_STEP)
+				{
+					ctx->linePos = ignore_space(ctx->tokenized_line, ++ctx->linePos);
+					ctx->linePos = exec_expr(ctx);
+					step = ctx->dstack[ctx->dsptr--];
+					ctx->linePos = ignore_space(ctx->tokenized_line, ctx->linePos);
+				}
 
 				if (ctx->linePos == -1 || ctx->tokenized_line[ctx->linePos] == ':')
 				{
@@ -624,7 +634,7 @@ void exec_cmd_for(struct Context *ctx)
 					fsi.endval = endval;
 					fsi.linenumber = ctx->line;
 					fsi.linepos = ctx->linePos;
-					fsi.step = 1;
+					fsi.step = step;
 
 					// check if this is already on the for stack. If so, update the values.
 					bool found = false;
@@ -1176,7 +1186,8 @@ void exec_cmd_next(struct Context *ctx)
 				found = true;
 
 				// if we have not exceeded the value
-				if (currentvalue + forstack[x].step <= forstack[x].endval)
+				if ((forstack[x].step > 0 && currentvalue + forstack[x].step <= forstack[x].endval) || 
+					(forstack[x].step < 0 && currentvalue + forstack[x].step >= forstack[x].endval))
 				{
 					// increment variable based on step value
 					var_add_update_float(ctx, tkn.token, currentvalue + forstack[x].step);

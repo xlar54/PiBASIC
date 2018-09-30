@@ -613,7 +613,7 @@ void exec_cmd_for(struct Context *ctx)
 				ctx->linePos = exec_expr(ctx);
 				endval = ctx->dstack[ctx->dsptr--];
 
-				int step = 1;
+				double step = 1;
 				ctx->linePos = ignore_space(ctx->tokenized_line, ctx->linePos);
 				if (ctx->tokenized_line[ctx->linePos] == TOKEN_STEP)
 				{
@@ -1297,6 +1297,7 @@ void exec_cmd_print(struct Context *ctx)
 void exec_cmd_rem(struct Context *ctx)
 {
 	// skip this line (do nothing)
+	ctx->linePos = -1;
 	return;
 }
 

@@ -63,7 +63,7 @@ struct forstackitem {
 	unsigned char *var;
 	int linenumber;
 	int linepos;
-	int step;
+	double step;
 	double endval;
 };
 

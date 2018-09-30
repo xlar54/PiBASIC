@@ -67,38 +67,13 @@ void basic_main()
 			unsigned char* tokenized_line = (unsigned char*)malloc(sizeof(unsigned char) * 160);
 			tokenize(&ctx, linebuf, tokenized_line);
 			ctx.tokenized_line = tokenized_line;
+			ctx.linePos = 0;
 
-			TokenType tkn;
-			tkn.token = (unsigned char*)malloc(sizeof(unsigned char) * 160);
-			ctx.linePos = get_token(tokenized_line, 0, &tkn);
+			exec_line(&ctx);
+			ctx.error_line = -1;
+			handle_error(&ctx);
 
-			bool found = false;
-			int j = 0;
-			for (j = 0; j < CMD_COUNT; j++)
-			{
-				if (tkn.token[0] == ctx.cmds[j].token)
-				{
-					found = true;
-					if (ctx.cmds[j].directmode == false)
-						ctx.error = ERR_ILLEGAL_DIRECT;
-					else
-						ctx.cmds[j].func(&ctx);
-
-					ctx.error_line = -1;
-					handle_error(&ctx);
-					break;
-				}
-			}
-
-			free(tkn.token);
 			free(tokenized_line);
-
-			if (found == false)
-			{
-				ctx.error = ERR_UNEXP;
-				ctx.error_line = -1;
-				handle_error(&ctx);
-			}
 
 			term_printf("\nReady.\n");
 		}
@@ -1328,6 +1303,7 @@ void exec_cmd_return(struct Context *ctx)
 void exec_cmd_run(struct Context *ctx)
 {
 	exec_program(ctx);
+	ctx->linePos = -1;
 	return;
 }
 

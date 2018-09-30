@@ -12,7 +12,7 @@ extern "C"
 #include "expr.h"
 }
 
-#define _BUILD_NUM_ "0.0.8"
+#define _BUILD_NUM_ "0.1.0"
 
 void basic_main()
 {
@@ -62,59 +62,44 @@ void basic_main()
 
 			continue;
 		}
-
-		/* process interpreter command */
-		if (ISALPHA(linebuf[0]))
+		else
 		{
-			if (compare(linebuf, (unsigned char*)"RUN"))
+			unsigned char* tokenized_line = (unsigned char*)malloc(sizeof(unsigned char) * 160);
+			tokenize(&ctx, linebuf, tokenized_line);
+			ctx.tokenized_line = tokenized_line;
+
+			TokenType tkn;
+			tkn.token = (unsigned char*)malloc(sizeof(unsigned char) * 160);
+			ctx.linePos = get_token(tokenized_line, 0, &tkn);
+
+			bool found = false;
+			int j = 0;
+			for (j = 0; j < CMD_COUNT; j++)
 			{
-				exec_program(&ctx);
-			}
-			else
-				if (compare(linebuf, (unsigned char*)"LIST"))
+				if (tkn.token[0] == ctx.cmds[j].token)
 				{
-					
-					exec_cmd_list();
-				}
-			else
-			{
-				term_printf("\n");
-				if (compare(linebuf, (unsigned char*)"NEW"))
-				{
-					exec_cmd_new(&ctx);
-				}	
-				else
-					if(compare(linebuf, (unsigned char*)"DIR"))
-					{
-						exec_cmd_dir();
-					}
-				else
-					if(strncmp((char*)linebuf, "LOAD", 4) == 0)
-					{
-						int t = 0;
-						while(linebuf[t] != 0)
-						{
-							linebuf[0+t] = linebuf[4+t];
-							t++;
-						}
-						exec_cmd_load(linebuf);
-					}	
-				else
-					if(strncmp((char *)linebuf, "SAVE", 4) == 0)
-					{
-						int t = 0;
-						while(linebuf[t] != 0)
-						{
-							linebuf[0+t] = linebuf[4+t];
-							t++;
-						}
-						exec_cmd_save(linebuf);
-					}
+					found = true;
+					if (ctx.cmds[j].directmode == false)
+						ctx.error = ERR_ILLEGAL_DIRECT;
 					else
-					{
-						term_printf("?Syntax Error");
-					}
+						ctx.cmds[j].func(&ctx);
+
+					ctx.error_line = -1;
+					handle_error(&ctx);
+					break;
+				}
 			}
+
+			free(tkn.token);
+			free(tokenized_line);
+
+			if (found == false)
+			{
+				ctx.error = ERR_UNEXP;
+				ctx.error_line = -1;
+				handle_error(&ctx);
+			}
+
 			term_printf("\nReady.\n");
 		}
 	}
@@ -122,25 +107,31 @@ void basic_main()
 
 void exec_init(struct Context *ctx)
 {
-	BINDCMD(&ctx->cmds[0], "PRINT", exec_cmd_print, TOKEN_PRINT);
-	BINDCMD(&ctx->cmds[1], "INPUT", exec_cmd_input, TOKEN_INPUT);
-	BINDCMD(&ctx->cmds[2], "RETURN", exec_cmd_return, TOKEN_RETURN);
-	BINDCMD(&ctx->cmds[3], "GOTO", exec_cmd_goto, TOKEN_GOTO);
-	BINDCMD(&ctx->cmds[4], "GOSUB", exec_cmd_gosub, TOKEN_GOSUB);
-	BINDCMD(&ctx->cmds[5], "LET", exec_cmd_let, TOKEN_LET);
-	BINDCMD(&ctx->cmds[6], "END", exec_cmd_end, TOKEN_END);
-	BINDCMD(&ctx->cmds[7], "STOP", exec_cmd_end, TOKEN_STOP);
-	BINDCMD(&ctx->cmds[8], "IF", exec_cmd_if, TOKEN_IF);
-	BINDCMD(&ctx->cmds[9], "DIM", exec_cmd_dim, TOKEN_DIM);
-	BINDCMD(&ctx->cmds[10], "REM", exec_cmd_rem, TOKEN_REM);
-	BINDCMD(&ctx->cmds[11], "THEN", exec_cmd_then, TOKEN_THEN);
-	BINDCMD(&ctx->cmds[12], "AND", exec_cmd_then, TOKEN_AND);
-	BINDCMD(&ctx->cmds[13], "OR", exec_cmd_then, TOKEN_OR);
-	BINDCMD(&ctx->cmds[14], "ABS", exec_cmd_then, TOKEN_ABS);
-	BINDCMD(&ctx->cmds[15], "FOR", exec_cmd_for, TOKEN_FOR);
-	BINDCMD(&ctx->cmds[16], "TO", exec_cmd_then, TOKEN_TO);
-	BINDCMD(&ctx->cmds[17], "NEXT", exec_cmd_next, TOKEN_NEXT);
-	BINDCMD(&ctx->cmds[18], "STEP", exec_cmd_then, TOKEN_STEP);
+	BINDCMD(&ctx->cmds[0], "PRINT", true, exec_cmd_print, TOKEN_PRINT);
+	BINDCMD(&ctx->cmds[1], "INPUT", false, exec_cmd_input, TOKEN_INPUT);
+	BINDCMD(&ctx->cmds[2], "RETURN", true, exec_cmd_return, TOKEN_RETURN);
+	BINDCMD(&ctx->cmds[3], "GOTO", true, exec_cmd_goto, TOKEN_GOTO);
+	BINDCMD(&ctx->cmds[4], "GOSUB", true, exec_cmd_gosub, TOKEN_GOSUB);
+	BINDCMD(&ctx->cmds[5], "LET", true, exec_cmd_let, TOKEN_LET);
+	BINDCMD(&ctx->cmds[6], "END", true, exec_cmd_end, TOKEN_END);
+	BINDCMD(&ctx->cmds[7], "STOP", true, exec_cmd_end, TOKEN_STOP);
+	BINDCMD(&ctx->cmds[8], "IF", true, exec_cmd_if, TOKEN_IF);
+	BINDCMD(&ctx->cmds[9], "DIM", true, exec_cmd_dim, TOKEN_DIM);
+	BINDCMD(&ctx->cmds[10], "REM", true, exec_cmd_rem, TOKEN_REM);
+	BINDCMD(&ctx->cmds[11], "THEN", true, exec_cmd_then, TOKEN_THEN);
+	BINDCMD(&ctx->cmds[12], "AND", true, exec_cmd_then, TOKEN_AND);
+	BINDCMD(&ctx->cmds[13], "OR", true, exec_cmd_then, TOKEN_OR);
+	BINDCMD(&ctx->cmds[14], "ABS", true, exec_cmd_then, TOKEN_ABS);
+	BINDCMD(&ctx->cmds[15], "FOR", true, exec_cmd_for, TOKEN_FOR);
+	BINDCMD(&ctx->cmds[16], "TO", true, exec_cmd_then, TOKEN_TO);
+	BINDCMD(&ctx->cmds[17], "NEXT", true, exec_cmd_next, TOKEN_NEXT);
+	BINDCMD(&ctx->cmds[18], "STEP", true, exec_cmd_then, TOKEN_STEP);
+	BINDCMD(&ctx->cmds[19], "NEW", true, exec_cmd_new, TOKEN_NEW);
+	BINDCMD(&ctx->cmds[20], "LOAD", true, exec_cmd_load, TOKEN_LOAD);
+	BINDCMD(&ctx->cmds[21], "SAVE", true, exec_cmd_save, TOKEN_SAVE);
+	BINDCMD(&ctx->cmds[22], "LIST", true, exec_cmd_list, TOKEN_LIST);
+	BINDCMD(&ctx->cmds[23], "RUN", true, exec_cmd_run, TOKEN_RUN);
+	BINDCMD(&ctx->cmds[24], "DIR", true, exec_cmd_dir, TOKEN_DIR);
 }
 
 void exec_program(struct Context* ctx)
@@ -187,43 +178,8 @@ void exec_program(struct Context* ctx)
 			ctx->error_line = ctx->line;
 		}
 		
-		if (ctx->error != ERR_NONE)
-		{
-			switch (ctx->error)
-			{
-				case ERR_UNEXP:
-					term_printf("\n?Syntax error");
-					break;
-				case ERR_UNDEF:
-					term_printf("\n?Undef'd statement error");
-					break;
-				case ERR_BREAK:
-					term_printf("\n?Break");
-					break;
-				case ERR_DIV0:
-					term_printf("\n?Division by zero error");
-					break;
-				case ERR_RTRN_WO_GSB:
-					term_printf("\n?RETURN without GOSUB error");
-					break;
-				case ERR_TYPE_MISMATCH:
-					term_printf("\n?Type mismatch error");
-					break;
-				case ERR_NEXT_WO_FOR:
-					term_printf("\n?NEXT without FOR error");
-					break;
-				default:
-					term_printf("\n?Unspecified error");
-					break;
-			}
-
-			if(ctx->error_line != -1)
-				term_printf(" in %d", ctx->error_line);
-
-			ctx->error = ERR_NONE;
-			ctx->running = false;
-			return;
-		}
+		handle_error(ctx);
+		if (!ctx->running) return;
 
 		if (ctx->jmpline == -1)
 		{
@@ -294,6 +250,50 @@ void exec_line(struct Context *ctx)
 			else
 				ctx->linePos++;
 		}*/
+	}
+}
+
+void handle_error(struct Context *ctx)
+{
+	if (ctx->error != ERR_NONE)
+	{
+		switch (ctx->error)
+		{
+		case ERR_UNEXP:
+			term_printf("\n?Syntax error");
+			break;
+		case ERR_UNDEF:
+			term_printf("\n?Undef'd statement error");
+			break;
+		case ERR_BREAK:
+			term_printf("\n?Break");
+			break;
+		case ERR_DIV0:
+			term_printf("\n?Division by zero error");
+			break;
+		case ERR_RTRN_WO_GSB:
+			term_printf("\n?RETURN without GOSUB error");
+			break;
+		case ERR_TYPE_MISMATCH:
+			term_printf("\n?Type mismatch error");
+			break;
+		case ERR_NEXT_WO_FOR:
+			term_printf("\n?NEXT without FOR error");
+			break;
+		case ERR_ILLEGAL_DIRECT:
+			term_printf("\n?Illegal direct error");
+			break;
+		default:
+			term_printf("\n?Unspecified error");
+			break;
+		}
+
+		if (ctx->error_line != -1)
+			term_printf(" in %d", ctx->error_line);
+
+		ctx->error = ERR_NONE;
+		ctx->running = false;
+		return;
 	}
 }
 
@@ -543,7 +543,7 @@ void exec_cmd_dim(struct Context *ctx)
 	//var_add_update(ctx, name, 0, ctx->dstack[ctx->dsptr--], 0);
 }
 
-void exec_cmd_dir()
+void exec_cmd_dir(struct Context *ctx)
 {
 	term_printf("\nFiles:\n");
 	
@@ -992,7 +992,7 @@ void exec_cmd_let(struct Context *ctx)
 	}
 }
 
-void exec_cmd_list()
+void exec_cmd_list(struct Context *ctx)
 {
 	ll_sort();
 
@@ -1009,7 +1009,7 @@ void exec_cmd_list()
 	}
 }
 
-void exec_cmd_load(unsigned char* filename)
+void exec_cmd_load(struct Context *ctx)
 {
 	FIL fp;
 	FRESULT res;
@@ -1022,30 +1022,29 @@ void exec_cmd_load(unsigned char* filename)
 	char fnbuffer[20] = {0};
 	
 	// skip spaces
-	int t=0;
-	while(filename[t] == ' ') t++;
+	ctx->linePos = ignore_space(ctx->tokenized_line,ctx->linePos);
 	
 	// expect quote
-	if(filename[t] != '\"')
+	if(ctx->tokenized_line[ctx->linePos] != '\"')
 	{
-		term_printf("?Syntax error");
+		ctx->error = ERR_UNEXP;
+		ctx->error_line = ctx->line;
 		return;
 	}
-	
-	t++;
-	while(filename[t] != 0 && filename[t] != '\"')
+	ctx->linePos++;
+	while(ctx->tokenized_line[ctx->linePos] != 0 && ctx->tokenized_line[ctx->linePos] != '\"')
 	{
-		fnbuffer[bufferCtr++] = filename[t++];
+		fnbuffer[bufferCtr++] = ctx->tokenized_line[ctx->linePos++];
 	
 		if(bufferCtr == 15)
-			filename[t] = '\"';
+			ctx->tokenized_line[ctx->linePos] = '\"';
 	}
-	
-	
+
 	// expect closing quote
-	if(filename[t] != '\"')
+	if(ctx->tokenized_line[ctx->linePos] != '\"')
 	{
-		term_printf("?Syntax error");
+		ctx->error = ERR_UNEXP;
+		ctx->error_line = ctx->line;
 		return;
 	}
 	
@@ -1326,7 +1325,13 @@ void exec_cmd_return(struct Context *ctx)
 	ctx->jmpline = ctx->line;
 }
 
-void exec_cmd_save(unsigned char* filename)
+void exec_cmd_run(struct Context *ctx)
+{
+	exec_program(ctx);
+	return;
+}
+
+void exec_cmd_save(struct Context *ctx)
 {
 	FIL fp;
 	FRESULT res;
@@ -1334,29 +1339,29 @@ void exec_cmd_save(unsigned char* filename)
 	char fnbuffer[15] = {0};
 
 	// skip spaces
-	int t=0;
-	while(filename[t] == ' ') t++;
+	ctx->linePos = ignore_space(ctx->tokenized_line,ctx->linePos);
 	
 	// expect quote
-	if(filename[t] != '\"')
+	if(ctx->tokenized_line[ctx->linePos] != '\"')
 	{
-		term_printf("?Syntax error");
+		ctx->error = ERR_UNEXP;
+		ctx->error_line = ctx->line;
 		return;
 	}
-	
-	t++;
-	while(filename[t] != 0 && filename[t] != '\"')
+	ctx->linePos++;
+	while(ctx->tokenized_line[ctx->linePos] != 0 && ctx->tokenized_line[ctx->linePos] != '\"')
 	{
-		fnbuffer[bufferCtr++] = filename[t++];
+		fnbuffer[bufferCtr++] = ctx->tokenized_line[ctx->linePos++];
 	
 		if(bufferCtr == 15)
-			filename[t] = '\"';
+			ctx->tokenized_line[ctx->linePos] = '\"';
 	}
-	
+
 	// expect closing quote
-	if(filename[t] != '\"')
+	if(ctx->tokenized_line[ctx->linePos] != '\"')
 	{
-		term_printf("?Syntax error");
+		ctx->error = ERR_UNEXP;
+		ctx->error_line = ctx->line;
 		return;
 	}
 	

@@ -12,7 +12,7 @@ extern "C"
 
 #define VAR_NAMESZ 2       /* maximum variable name length */
 #define CMD_NAMESZ 10       /* limit for command words */
-#define CMD_COUNT 19        /* number of available commands */
+#define CMD_COUNT 25        /* number of available commands */
 #define DATA_STSZ 16        /* depth of calculation */
 #define CALL_STSZ 16        /* subroutine call depth */
 #define LINE_SZ 80          /* line width restriction */
@@ -28,6 +28,7 @@ extern "C"
 #define ERR_RTRN_WO_GSB		-6
 #define ERR_TYPE_MISMATCH	-7
 #define ERR_NEXT_WO_FOR		-8
+#define ERR_ILLEGAL_DIRECT	-9
 
 #define VAR_NONE	0
 #define VAR_INT		1
@@ -73,8 +74,9 @@ static int forstackidx = 0;
 #define DIGIT_LIST  '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
 #define DIGIT_LIST_COUNT 10
 
-#define BINDCMD(c,n,f,t)  do {\
+#define BINDCMD(c,n,m,f,t)  do {\
 							strcpy((char *)((c)->name), (char *)n);\
+							(c)->directmode = m;\
 							(c)->func = f;\
 							(c)->token = t;\
 						} while(0)
@@ -90,6 +92,7 @@ struct Variable
 struct Command
 {
 	unsigned char name[CMD_NAMESZ];
+	bool directmode;
 	unsigned char token;
 	void(*func)(struct Context*);
 };
@@ -122,9 +125,10 @@ void exec_program(struct Context* ctx);
 void exec_line(struct Context *ctx);
 int exec_expr(struct Context *ctx);
 int exec_strexpr(struct Context *ctx, int* len);
+void handle_error(struct Context *ctx);
 	
 void exec_cmd_dim(struct Context *ctx);
-void exec_cmd_dir();
+void exec_cmd_dir(struct Context *ctx);
 void exec_cmd_end(struct Context *ctx);
 void exec_cmd_for(struct Context *ctx);
 void exec_cmd_gosub(struct Context *ctx);
@@ -132,14 +136,15 @@ void exec_cmd_goto(struct Context *ctx);
 void exec_cmd_if(struct Context *ctx);
 void exec_cmd_input(struct Context *ctx);
 void exec_cmd_let(struct Context*);
-void exec_cmd_list();
-void exec_cmd_load(unsigned char *filename);
+void exec_cmd_list(struct Context *ctx);
+void exec_cmd_load(struct Context *ctx);
 void exec_cmd_new(struct Context *ctx);
 void exec_cmd_next(struct Context *ctx);
 void exec_cmd_print(struct Context *ctx);
 void exec_cmd_rem(struct Context *ctx);
 void exec_cmd_return(struct Context *ctx);
-void exec_cmd_save(unsigned char *filename);
+void exec_cmd_run(struct Context *ctx);
+void exec_cmd_save(struct Context *ctx);
 void exec_cmd_then(struct Context *ctx);
 
 void var_clear_all(struct Context *ctx);
@@ -255,5 +260,6 @@ void tokenize(struct Context* ctx, const unsigned char* input, unsigned char *ou
 #define TOKEN_RIGHT$		201	
 #define TOKEN_MID$			202	
 #define TOKEN_GO			203	
+#define TOKEN_DIR			204
 }
 #endif
